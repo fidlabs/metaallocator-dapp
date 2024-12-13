@@ -24,6 +24,8 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    environment: staging-fidl
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,6 +55,10 @@ jobs:
 
       - name: Build with Next.js
         run: npm run build
+        env:
+          NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID }}
+          NEXT_PUBLIC_FILECOIN_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID }}
+          NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
