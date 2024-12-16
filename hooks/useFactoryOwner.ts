@@ -1,14 +1,15 @@
 import factoryABI from "@/abi/Factory";
-import { useReadContract } from "wagmi";
 import useFactoryAddress from "./useFactoryAddress";
+import { useReadContractEveryBlock } from "./useReadContractEveryBlock";
 
 export function useFactoryOwner() {
   const factoryAddress = useFactoryAddress();
 
-  return useReadContract({
+  return useReadContractEveryBlock({
     abi: factoryABI,
     address: factoryAddress,
     functionName: "owner",
+    throttle: 5000,
   });
 }
 

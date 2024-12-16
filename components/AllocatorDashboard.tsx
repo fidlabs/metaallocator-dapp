@@ -1,12 +1,13 @@
 "use client";
 
+import allocatorABI from "@/abi/Allocator";
 import useOwnable2StepOwner from "@/hooks/useOwnable2StepOwner";
 import type { Address } from "viem";
 import AllocatorAllowanceWidget from "./AllocatorAllowanceWidget";
 import AllocatorsWidget from "./AllocatorsWidget";
+import SafeGuard from "./SafeGuard";
 import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
-import allocatorABI from "@/abi/Allocator";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -30,12 +31,14 @@ export function AllocatorDashboard({
         <AllocatorAllowanceWidget
           allocatorContractAddress={allocatorContractAddress}
         />
-        <SafePendingTransactionsList
-          targetFilter={{
-            address: allocatorContractAddress,
-            abi: allocatorABI,
-          }}
-        />
+        <SafeGuard>
+          <SafePendingTransactionsList
+            targetFilter={{
+              address: allocatorContractAddress,
+              abi: allocatorABI,
+            }}
+          />
+        </SafeGuard>
       </div>
     </SafeProvider>
   );

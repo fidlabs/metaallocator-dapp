@@ -75,10 +75,7 @@ export function FactoryOwnerCard() {
           </CardContent>
 
           <CardFooter className="justify-end">
-            <TransactionButton
-              disabled={!transaction}
-              transaction={transaction}
-            >
+            <TransactionButton transaction={transaction}>
               Transfer Ownership
             </TransactionButton>
           </CardFooter>

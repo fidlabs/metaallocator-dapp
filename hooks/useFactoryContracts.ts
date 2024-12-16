@@ -7,6 +7,9 @@ export function useFactoryContracts(factoryAddress: Address) {
     abi: factoryABI,
     address: factoryAddress,
     functionName: "getContracts",
+    query: {
+      refetchInterval: 30000,
+    },
   });
 }
 

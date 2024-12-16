@@ -22,7 +22,7 @@ export function FactoryContractsWidget({
     <Card>
       <CardHeader>
         <CardTitle className="text-lg text-primary font-semibold">
-          Contract deployed via Factory
+          Contracts Deployed via Factory
         </CardTitle>
       </CardHeader>
 

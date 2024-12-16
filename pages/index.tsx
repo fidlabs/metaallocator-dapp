@@ -1,5 +1,6 @@
 "use client";
 
+import FactoryContractDeployWidget from "@/components/FactoryContractDeployWidget";
 import FactoryContractsWidget from "@/components/FactoryContractsWidget";
 import FactoryOwnerCard from "@/components/FactoryOwnerCard";
 import SafeGuard from "@/components/SafeGuard";
@@ -23,6 +24,7 @@ export default function HomePage() {
         </div>
         <FactoryOwnerCard />
         <FactoryContractsWidget factoryAddress={factoryAddress} />
+        <FactoryContractDeployWidget factoryAddress={factoryAddress} />
         <SafeGuard>
           <SafePendingTransactionsList />
         </SafeGuard>
