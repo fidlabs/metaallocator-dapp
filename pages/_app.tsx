@@ -7,6 +7,7 @@ import { Montserrat } from "next/font/google";
 import { useIsomorphicLayoutEffect } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
+import Link from "next/link";
 
 const font = Montserrat({
   subsets: ["latin"],
@@ -24,9 +25,17 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Metaallocator dApp</title>
       </Head>
       <Providers>
-        <div className="container mx-auto py-3">
+        <header className="container mx-auto py-3 flex justify-between items-center gap-6 mb-12">
+          <h1 className="text-xl font-semibold">
+            <Link className="hover:underline" href="/">
+              Metaallocator dApp
+            </Link>
+            <sup className="text-sm font-normal text-muted-foreground">
+              BETA
+            </sup>
+          </h1>
           <ConnectButton />
-        </div>
+        </header>
         <Component {...pageProps} />
       </Providers>
     </>

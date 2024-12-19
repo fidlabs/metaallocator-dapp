@@ -1,5 +1,5 @@
 import useAllocatorAllowance from "@/hooks/useAllocatorAllowance";
-import bytes from "bytes-iec";
+import { formatBytes } from "@/lib/utils";
 import type { Address } from "viem";
 import { TableCell, TableRow } from "./ui/table";
 
@@ -21,11 +21,7 @@ export function AllocatorsTableRow({
     <TableRow>
       <TableCell>{allocatorAddress}</TableCell>
       <TableCell className="text-right">
-        {isLoading
-          ? "Loading..."
-          : allowance
-          ? bytes.format(Number(allowance), { mode: "binary" })
-          : "-"}
+        {isLoading ? "Loading..." : allowance ? formatBytes(allowance) : "-"}
       </TableCell>
     </TableRow>
   );

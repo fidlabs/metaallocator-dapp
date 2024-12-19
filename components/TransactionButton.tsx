@@ -1,39 +1,56 @@
+import { cn } from "@/lib/utils";
 import { TransactionBase } from "@safe-global/types-kit";
+import FallbackConnectWalletButton from "./FallbackConnectWalletButton";
+import LoaderButton from "./LoaderButton";
+import RegularTransactionButton from "./RegularTransactionButton";
 import SafeGuard from "./SafeGuard";
 import SafeTransactionButton from "./SafeTransactionButton";
-import { Button, ButtonProps } from "./ui/button";
-import FallbackConnectWalletButton from "./FallbackConnectWalletButton";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ButtonProps } from "./ui/button";
 
-export interface TransactionButtonProps extends ButtonProps {
+export interface TransactionButtonProps extends Omit<ButtonProps, "onError"> {
   transaction: TransactionBase | null | undefined;
+  onError?(error: Error): void;
   onSuccess?(): void;
 }
 
 export function TransactionButton({
+  children,
   transaction,
+  onError,
   onSuccess,
   ...rest
 }: TransactionButtonProps) {
   return (
     <SafeGuard
       notConnectedFallback={() => <FallbackConnectWalletButton {...rest} />}
-      notInitializedFallback={() => (
-        <Button
+      notDeployedFallback={() => (
+        <RegularTransactionButton
           {...rest}
-          disabled
+          transaction={transaction}
+          onError={onError}
+          onSuccess={onSuccess}
+        >
+          {children}
+        </RegularTransactionButton>
+      )}
+      notInitializedFallback={() => (
+        <LoaderButton
+          {...rest}
+          loading
           className={cn(rest.className, "min-w-[120px]")}
         >
-          <Loader2 className="animate-spin" />
-        </Button>
+          {children}
+        </LoaderButton>
       )}
     >
       <SafeTransactionButton
         {...rest}
         transaction={transaction}
+        onError={onError}
         onSuccess={onSuccess}
-      />
+      >
+        {children}
+      </SafeTransactionButton>
     </SafeGuard>
   );
 }

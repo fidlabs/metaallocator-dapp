@@ -1,8 +1,6 @@
 import { isAddress, type Address } from "viem";
 
 export enum QueryKey {
-  FACTORY_OWNER = "factory_owner",
-  SAFE_IS_DEPLOYED = "safe_is_deployed",
   SAFE_OWNERS = "safe_owners",
   SAFE_PENDING_TRANSACTIONS = "safe_pending_transactions",
 }

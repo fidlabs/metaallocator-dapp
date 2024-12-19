@@ -1,10 +1,11 @@
 import { MutatationKey, QueryKey } from "@/constants";
 import { SafeClient } from "@safe-global/sdk-starter-kit";
-import { useQueryClient } from "@tanstack/react-query";
+import useInvalidateQueries from "./useInvalidateQueries";
 import useSafeClientMutation, {
   UseSafeClientMutationOptions,
 } from "./useSafeClientMutation";
 import useSafeContext from "./useSafeContext";
+import useWaitForTransaction from "./useWaitForTransaction";
 
 type SendTransactionInput = Parameters<SafeClient["send"]>[0];
 export type UseSendSafeTransactionOptions = Omit<
@@ -16,17 +17,25 @@ export function useSendSafeTransaction(
   options: UseSendSafeTransactionOptions = {}
 ) {
   const { safeAddress } = useSafeContext();
-  const queryClient = useQueryClient();
+  const { waitForTransactionReceipt, waitForTransactionIndexed } =
+    useWaitForTransaction();
+  const invalidateQueries = useInvalidateQueries();
 
   return useSafeClientMutation({
     ...options,
     mutationKey: [MutatationKey.SEND_SAFE_TRANSACTION],
     mutationSafeClientFn: async (safeClient, input: SendTransactionInput) => {
-      await safeClient.send(input);
+      const result = await safeClient.send(input);
 
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress],
-      });
+      if (result.transactions?.ethereumTxHash) {
+        await waitForTransactionReceipt(result.transactions.ethereumTxHash);
+
+        invalidateQueries([[QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress]]);
+
+        await waitForTransactionIndexed(result.transactions);
+      } else if (result.transactions?.safeTxHash) {
+        invalidateQueries([[QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress]]);
+      }
     },
   });
 }

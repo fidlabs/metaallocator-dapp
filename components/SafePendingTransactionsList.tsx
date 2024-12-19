@@ -1,19 +1,9 @@
-import useConfirmSafeTransaction from "@/hooks/useConfirmSafeTransaction";
-import useExecuteSafeTransaction from "@/hooks/useExecuteSafeTransaction";
 import useSafeContext from "@/hooks/useSafeContext";
-import useSafeOwners from "@/hooks/useSafeOwners";
 import useSafePendingTransactions from "@/hooks/useSafePendingTransactions";
-import { SafeMultisigTransactionResponse } from "@safe-global/types-kit";
-import {
-  Abi,
-  decodeFunctionData,
-  Hex,
-  isAddress,
-  isAddressEqual,
-  type Address,
-} from "viem";
-import { useAccount } from "wagmi";
-import { Button } from "./ui/button";
+import { type Abi, isAddress, isAddressEqual } from "viem";
+import SafePendingTransactionItem, {
+  SafePendingTransactionItemProps,
+} from "./SafePendingTransactionItem";
 import {
   Card,
   CardContent,
@@ -22,31 +12,19 @@ import {
   CardTitle,
 } from "./ui/card";
 
-interface Target {
-  address: Address;
-  abi: Abi;
+export interface SafePendingTransactionsListProps<abi extends Abi> {
+  targetFilter?: SafePendingTransactionItemProps<abi>["target"];
 }
 
-export interface SafePendingTransactionsListProps {
-  targetFilter?: Target;
-}
-
-export function SafePendingTransactionsList({
+export function SafePendingTransactionsList<const abi extends Abi>({
   targetFilter,
-}: SafePendingTransactionsListProps) {
-  const account = useAccount();
+}: SafePendingTransactionsListProps<abi>) {
   const { safeAddress } = useSafeContext();
   const {
     data: pendingTransactions = [],
     error,
     isLoading,
   } = useSafePendingTransactions();
-  const { data: safeOwners = [] } = useSafeOwners(safeAddress);
-  const ownerConnected =
-    !!account.address && safeOwners.includes(account.address);
-  const { mutate: confirmSafeTransaction } = useConfirmSafeTransaction();
-  const { mutate: executeSafeTransaction } = useExecuteSafeTransaction();
-  // const visibleTransactions = pendingTransactions;
   const visibleTransactions = targetFilter
     ? pendingTransactions.filter((pendingTx) => {
         return (
@@ -80,88 +58,24 @@ export function SafePendingTransactionsList({
             )}
 
             {visibleTransactions.length > 0 && (
-              <ol>
-                {pendingTransactions.map((pendingTx) => {
-                  const confirmationsCount =
-                    pendingTx.confirmations?.length ?? 0;
-                  const threshold = pendingTx.confirmationsRequired;
-                  const canConfirm =
-                    ownerConnected && pendingTx.proposer !== account.address;
-                  const canExecute = confirmationsCount >= threshold;
-
+              <div className="-mx-6">
+                {pendingTransactions.map((pendingTx, index) => {
                   return (
-                    <li key={pendingTx.safeTxHash}>
-                      <p>
-                        {getTransactionTitle(pendingTx, targetFilter)} (
-                        {confirmationsCount}/{threshold})
-                      </p>
-
-                      {canConfirm && (
-                        <Button
-                          onClick={() =>
-                            confirmSafeTransaction(
-                              {
-                                safeTxHash: pendingTx.safeTxHash,
-                              },
-                              {
-                                onError: console.warn,
-                                onSuccess: () =>
-                                  console.log("TRANSACTION CONFIRMED"),
-                              }
-                            )
-                          }
-                        >
-                          Confirm
-                        </Button>
-                      )}
-
-                      {canExecute && (
-                        <Button
-                          onClick={() =>
-                            executeSafeTransaction(
-                              {
-                                transaction: pendingTx,
-                              },
-                              {
-                                onError: console.warn,
-                                onSuccess: () =>
-                                  console.log("TRANSACTION EXECUTED"),
-                              }
-                            )
-                          }
-                        >
-                          Execute
-                        </Button>
-                      )}
-                    </li>
+                    <SafePendingTransactionItem<abi>
+                      key={pendingTx.safeTxHash}
+                      index={index + 1}
+                      transaction={pendingTx}
+                      target={targetFilter}
+                    />
                   );
                 })}
-              </ol>
+              </div>
             )}
           </>
         )}
       </CardContent>
     </Card>
   );
-}
-
-function getTransactionTitle(
-  tx: SafeMultisigTransactionResponse,
-  target: Target | undefined
-): string {
-  if (!tx.data || !target) {
-    return tx.safeTxHash;
-  }
-
-  const functionData = decodeFunctionData({
-    abi: target.abi,
-    data: tx.data as Hex,
-  });
-
-  const argumentsString =
-    functionData.args?.map((arg) => `"${String(arg)}"`).join(", ") ?? "";
-
-  return `${functionData.functionName}(${argumentsString})`;
 }
 
 export default SafePendingTransactionsList;

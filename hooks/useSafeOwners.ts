@@ -15,6 +15,7 @@ export function useSafeOwners(
       return owners as Address[];
     },
     enabled: !!safeAddress,
+    staleTime: Infinity,
   });
 }
 

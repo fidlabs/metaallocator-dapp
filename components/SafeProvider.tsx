@@ -49,6 +49,8 @@ export function SafeProvider({
     apiKit
       .getSafeInfo(safeAddress)
       .then(() => {
+        setDeployed(true);
+
         Promise.all([
           createSafeClient({
             safeAddress,

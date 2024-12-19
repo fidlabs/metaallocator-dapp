@@ -48,10 +48,13 @@ export function FactoryContractsWidget({
             )}
 
             {contracts.length > 0 && (
-              <ul>
+              <ul className="-mx-6">
                 {contracts.map((contractAddress) => (
-                  <li className="py-1" key={contractAddress}>
-                    {contractAddress}{" "}
+                  <li
+                    className="flex justify-between items-center gap-4 odd:bg-gray-100 px-6 py-4"
+                    key={contractAddress}
+                  >
+                    <p>{contractAddress}</p>
                     <Link
                       className="underline text-dodger-blue"
                       href={`/allocator/${contractAddress}`}
