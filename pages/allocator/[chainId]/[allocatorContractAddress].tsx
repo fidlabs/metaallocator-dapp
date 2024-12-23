@@ -1,5 +1,6 @@
 import AllocatorDashboard from "@/components/AllocatorDashboard";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { isAddress } from "viem";
 import { useChainId } from "wagmi";
 
@@ -12,10 +13,13 @@ export default function AllocatorPage() {
 
   const chainIdNumber =
     typeof providedChainId === "string" ? parseInt(providedChainId) : NaN;
+  const invalidChain = isNaN(chainIdNumber) || chainIdNumber !== chainId;
 
-  if (isNaN(chainIdNumber) || chainIdNumber !== chainId) {
-    replace("/");
-  }
+  useEffect(() => {
+    if (invalidChain) {
+      replace("/");
+    }
+  }, [invalidChain, replace]);
 
   return (
     <div className="container mx-auto pb-8">
