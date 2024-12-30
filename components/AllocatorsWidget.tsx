@@ -34,6 +34,7 @@ export function AllocatorsWidget({
                   <TableRow>
                     <TableHead>Address</TableHead>
                     <TableHead className="text-right">Allowance</TableHead>
+                    <TableHead />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
