@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input, type InputProps } from "./ui/input";
+import { toast } from "sonner";
 
 export interface SetImplementationWidgetProps {
   contractAddress: string;
@@ -44,6 +45,7 @@ export function SetImplementationWidget({
 
   const handleTransactionSuccess = useCallback(() => {
     setNewImplementationAddress("");
+    toast("Factory implementation was changed");
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import { useIsomorphicLayoutEffect } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import Head from "next/head";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/sonner";
 
 const font = Montserrat({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </header>
         <Component {...pageProps} />
       </Providers>
+      <Toaster />
     </>
   );
 }

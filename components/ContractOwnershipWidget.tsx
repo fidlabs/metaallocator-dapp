@@ -23,6 +23,7 @@ import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import RegularTransactionButton from "./RegularTransactionButton";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export interface ContractOwnershipWidgetProps {
   contractAddress: Address;
@@ -83,12 +84,16 @@ export function ContractOwnershipWidget({
         setTab("accept");
       }
     });
+
+    toast("Ownership transfer was initiated");
   }, [refetchPendingOwner]);
 
   const handleOwnershipAccepted = useCallback(() => {
     refetchOwner();
     refetchPendingOwner();
     setTab("transfer");
+
+    toast("Ownership was accepted");
   }, [refetchOwner, refetchPendingOwner]);
 
   return (

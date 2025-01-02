@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input, type InputProps } from "./ui/input";
+import { toast } from "sonner";
 
 export interface FactoryContractDeployWidgetProps {
   factoryAddress: string;
@@ -44,6 +45,7 @@ export function FactoryContractDeployWidget({
 
   const handleTransactionSuccess = useCallback(() => {
     setInitialOwnerAddress("");
+    toast("Contract was deployed");
   }, []);
 
   return (

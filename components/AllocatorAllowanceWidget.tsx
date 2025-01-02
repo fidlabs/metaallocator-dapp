@@ -1,6 +1,7 @@
 import allocatorABI from "@/abi/Allocator";
 import { TransactionBase } from "@safe-global/types-kit";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { type Address, encodeFunctionData, isAddress } from "viem";
 import BinaryBytesField from "./BinaryBytesField";
 import TransactionButton from "./TransactionButton";
@@ -36,6 +37,7 @@ export function AllocatorAllowanceWidget({
     // Reset the form value
     setAllocatorAddress("");
     setAllowance(null);
+    toast("Allowance was updated");
   }, []);
 
   const transaction = useMemo<TransactionBase | null>(() => {
