@@ -1,8 +1,10 @@
 import { MutatationKey, QueryKey } from "@/constants";
 import { isWaitableTransaction } from "@/types/common";
 import { SafeClient } from "@safe-global/sdk-starter-kit";
-import { useQueryClient } from "@tanstack/react-query";
-import useSafeClientMutation from "./useSafeClientMutation";
+import useInvalidateQueries from "./useInvalidateQueries";
+import useSafeClientMutation, {
+  UseSafeClientMutationOptions,
+} from "./useSafeClientMutation";
 import useSafeContext from "./useSafeContext";
 
 type ExecuteTransactionInput = Parameters<
@@ -15,11 +17,19 @@ export interface ExecuteSafeTransactionParameters {
   options?: ExecuteTransactionInput[1];
 }
 
-export function useExecuteSafeTransaction() {
+export type UseExecuteSafeTransactionOptions = Omit<
+  UseSafeClientMutationOptions<void, Error, ExecuteSafeTransactionParameters>,
+  "mutationKey" | "mutationSafeClientFn"
+>;
+
+export function useExecuteSafeTransaction(
+  options: UseExecuteSafeTransactionOptions = {}
+) {
   const { safeAddress } = useSafeContext();
-  const queryClient = useQueryClient();
+  const invalidateQueries = useInvalidateQueries();
 
   return useSafeClientMutation({
+    ...options,
     mutationKey: [MutatationKey.EXECUTE_SAFE_TRANSACTION],
     mutationSafeClientFn: async (
       safeClient,
@@ -42,9 +52,7 @@ export function useExecuteSafeTransaction() {
         await transactionResponse.wait();
       }
 
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress],
-      });
+      invalidateQueries([[QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress]]);
     },
   });
 }

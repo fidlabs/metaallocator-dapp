@@ -3,6 +3,7 @@
 import useFactoryContracts from "@/hooks/useFactoryContracts";
 import Link from "next/link";
 import type { Address } from "viem";
+import { useChainId } from "wagmi";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export interface FactoryContractsWidgetProps {
@@ -12,6 +13,7 @@ export interface FactoryContractsWidgetProps {
 export function FactoryContractsWidget({
   factoryAddress,
 }: FactoryContractsWidgetProps) {
+  const chainId = useChainId();
   const {
     data: contracts,
     error,
@@ -22,7 +24,7 @@ export function FactoryContractsWidget({
     <Card>
       <CardHeader>
         <CardTitle className="text-lg text-primary font-semibold">
-          Contract deployed via Factory
+          Contracts Deployed via Factory
         </CardTitle>
       </CardHeader>
 
@@ -48,13 +50,16 @@ export function FactoryContractsWidget({
             )}
 
             {contracts.length > 0 && (
-              <ul>
+              <ul className="-mx-6">
                 {contracts.map((contractAddress) => (
-                  <li className="py-1" key={contractAddress}>
-                    {contractAddress}{" "}
+                  <li
+                    className="flex justify-between items-center gap-4 odd:bg-gray-100 px-6 py-4"
+                    key={contractAddress}
+                  >
+                    <p>{contractAddress}</p>
                     <Link
                       className="underline text-dodger-blue"
-                      href={`/allocator/${contractAddress}`}
+                      href={`/allocator/${chainId}/${contractAddress}`}
                     >
                       View Details
                     </Link>

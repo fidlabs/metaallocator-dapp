@@ -5,6 +5,8 @@ import {
 import { type ReactElement, useEffect, useState } from "react";
 import { useClient, useConnectorClient } from "wagmi";
 import SafeContext, { type SafeContextShape } from "./SafeContext";
+import SafeApiKit from "@safe-global/api-kit";
+import { getCustomSafeTxServiceUrl } from "@/lib/utils";
 
 type RenderProps = Pick<
   SafeContextShape,
@@ -24,6 +26,7 @@ export function SafeProvider({
   const publicClient = useClient();
   const { data: connectorClient, isLoading } = useConnectorClient();
   const [initialized, setInitialized] = useState(false);
+  const [deployed, setDeployed] = useState(false);
   const [publicSafeClient, setPublicSafeClient] = useState<SafeClient>();
   const [signerSafeClient, setSignerSafeClient] = useState<SafeClient>();
 
@@ -36,35 +39,52 @@ export function SafeProvider({
       return;
     }
 
-    Promise.all([
-      createSafeClient({
-        safeAddress,
-        provider: publicClient.transport,
-        txServiceUrl:
-          "https://transaction-testnet.staging.safe.filecoin.io/api",
-      }),
-      connectorClient
-        ? createSafeClient({
+    const txServiceUrl = getCustomSafeTxServiceUrl(publicClient.chain.id);
+
+    const apiKit = new SafeApiKit({
+      chainId: BigInt(publicClient.chain.id),
+      txServiceUrl,
+    });
+
+    apiKit
+      .getSafeInfo(safeAddress)
+      .then(() => {
+        setDeployed(true);
+
+        Promise.all([
+          createSafeClient({
             safeAddress,
-            provider: connectorClient.transport,
-            signer: connectorClient.account.address,
-            txServiceUrl:
-              "https://transaction-testnet.staging.safe.filecoin.io/api",
+            provider: publicClient.transport,
+            txServiceUrl,
+          }),
+          connectorClient
+            ? createSafeClient({
+                safeAddress,
+                provider: connectorClient.transport,
+                signer: connectorClient.account.address,
+                txServiceUrl,
+              })
+            : Promise.resolve(undefined),
+        ])
+          .then(([newPublicSafeClient, maybeNewSignerSafeClient]) => {
+            setInitialized(true);
+            setPublicSafeClient(newPublicSafeClient);
+            setSignerSafeClient(maybeNewSignerSafeClient);
           })
-        : Promise.resolve(undefined),
-    ])
-      .then(([newPublicSafeClient, maybeNewSignerSafeClient]) => {
-        setInitialized(true);
-        setPublicSafeClient(newPublicSafeClient);
-        setSignerSafeClient(maybeNewSignerSafeClient);
+          .catch((error) => {
+            console.warn("Error intializing Safe clients", error);
+          });
       })
-      .catch((error) => {
-        console.warn("Error intializing Safe clients", error);
+      .catch(() => {
+        // If the request throws error we assume the safe is not deployed
+        setInitialized(true);
+        setDeployed(false);
       });
   }, [connectorClient, publicClient, safeAddress]);
 
   const context: SafeContextShape = {
     connected: !!connectorClient,
+    deployed,
     initialized: initialized || isLoading,
     safeAddress,
     publicSafeClient,

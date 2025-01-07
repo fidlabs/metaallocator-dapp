@@ -1,12 +1,13 @@
 import allocatorABI from "@/abi/Allocator";
 import { Address } from "viem";
-import { useReadContract } from "wagmi";
+import { useReadContractEveryBlock } from "./useReadContractEveryBlock";
 
 export function useAllocators(allocatorContractAddress: Address) {
-  return useReadContract({
+  return useReadContractEveryBlock({
     abi: allocatorABI,
     address: allocatorContractAddress,
     functionName: "getAllocators",
+    throttle: 5000,
   });
 }
 

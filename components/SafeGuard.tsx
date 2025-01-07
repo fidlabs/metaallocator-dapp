@@ -1,4 +1,3 @@
-import useIsSafeDeployed from "@/hooks/useIsSafeDeployed";
 import useSafeContext from "@/hooks/useSafeContext";
 import type { ReactNode } from "react";
 
@@ -18,14 +17,13 @@ export function SafeGuard({
   notDeployedFallback = null,
   notInitializedFallback = null,
 }: SafeGuardProps) {
-  const { connected, initialized } = useSafeContext();
-  const { data: safeDeployed = false } = useIsSafeDeployed();
+  const { connected, deployed, initialized } = useSafeContext();
 
   if (!initialized && notInitializedFallback !== false) {
     return renderFallback(notInitializedFallback);
   }
 
-  if (!safeDeployed && notDeployedFallback !== false) {
+  if (!deployed && notDeployedFallback !== false) {
     return renderFallback(notDeployedFallback);
   }
 
