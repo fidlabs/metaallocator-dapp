@@ -1,14 +1,18 @@
+import bytes from "bytes-iec";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import bytes from "bytes-iec";
+import { filecoin, filecoinCalibration } from "wagmi/chains";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function getCustomSafeTxServiceUrl(chainId: number): string | undefined {
-  if (chainId === 314_159) {
-    return "https://transaction-testnet.staging.safe.filecoin.io/api";
+  switch (chainId) {
+    case filecoin.id:
+      return "https://transaction.safe.filecoin.io";
+    case filecoinCalibration.id:
+      return "https://transaction-testnet.safe.filecoin.io";
   }
 }
 
