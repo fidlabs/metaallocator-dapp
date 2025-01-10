@@ -70,6 +70,7 @@ export function AllocatorAllowanceWidget({
 
         <BinaryBytesField
           placeholder="Enter allowance amount to be added"
+          allowedUnits={["GiB", "TiB", "PiB"]}
           initialUnit="GiB"
           value={allowance}
           onValueChange={setAllowance}

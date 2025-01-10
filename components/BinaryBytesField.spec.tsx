@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import BinaryBytesField from "./BinaryBytesField";
+import BinaryBytesField, { type UnitsList } from "./BinaryBytesField";
 
 describe("BinaryBytesField component", () => {
   afterEach(cleanup);
@@ -42,5 +42,22 @@ describe("BinaryBytesField component", () => {
     fireEvent.click(unitButton);
     expect(trigger.textContent?.trim()).toBe(unit);
     expect(changeCallback).toHaveBeenLastCalledWith(value);
+  });
+
+  it("renders only allowed units when they are set", () => {
+    const allowedUnits: UnitsList = ["B", "ZiB"];
+    const { getByRole, queryByRole, queryAllByRole } = render(
+      <BinaryBytesField allowedUnits={allowedUnits} />
+    );
+
+    const trigger = getByRole("button");
+    fireEvent.click(trigger);
+    const unitButtons = queryAllByRole("option");
+
+    expect(unitButtons.length).toBe(allowedUnits.length);
+
+    allowedUnits.forEach((unit) => {
+      expect(queryByRole("option", { name: unit })).toBeInTheDocument();
+    });
   });
 });

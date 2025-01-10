@@ -8,18 +8,25 @@ import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command";
 import { Input, InputProps } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
+type ResolvedUnitsList<UnitT extends UnitsList | void> = UnitT extends void
+  ? typeof units
+  : UnitT;
+type Unit = (typeof units)[number];
+type Value = bigint | null;
+type ChangeHandler = NonNullable<InputProps["onChange"]>;
+export type UnitsList = readonly [Unit, ...Unit[]];
 type BaseProps = Omit<HTMLAttributes<HTMLDivElement>, "children">;
 
-export interface BinaryBytesFieldProps extends BaseProps {
-  initialUnit?: Unit;
+export interface BinaryBytesFieldProps<UnitT extends UnitsList | void = void>
+  extends BaseProps {
+  allowedUnits?: UnitT;
+  initialUnit?: UnitT extends void
+    ? Unit | void
+    : ResolvedUnitsList<UnitT>[number];
   placeholder?: string;
   value?: Value;
   onValueChange?(nextValue: bigint | null): void;
 }
-
-type Unit = (typeof units)[number];
-type Value = bigint | null;
-type ChangeHandler = NonNullable<InputProps["onChange"]>;
 
 const units = [
   "B",
@@ -40,18 +47,22 @@ const unitMagnitudeMap = units.reduce((result, unit, index) => {
   };
 }, {}) as Record<Unit, bigint>;
 
-export function BinaryBytesField({
+export function BinaryBytesField<UnitT extends UnitsList | void = void>({
+  allowedUnits,
   className,
-  initialUnit = units[0],
+  initialUnit,
   placeholder,
   value: controlledValue,
   onValueChange,
   ...rest
-}: BinaryBytesFieldProps) {
+}: BinaryBytesFieldProps<UnitT>) {
+  const displayedUnits: UnitsList = allowedUnits ?? units;
   const [uncontrolledValue, setUncontrolledValue] = useState<Value>(
     controlledValue ?? null
   );
-  const [unit, setUnit] = useState(initialUnit);
+  const [unit, setUnit] = useState<Unit>(
+    initialUnit ?? (displayedUnits as UnitsList)[0]
+  );
   const [unitPopoverOpen, setUnitPopoverOpen] = useState(false);
   const magnitude = unitMagnitudeMap[unit];
 
@@ -145,7 +156,7 @@ export function BinaryBytesField({
           <Command>
             <CommandList>
               <CommandGroup>
-                {units.map((possibleUnit) => (
+                {displayedUnits.map((possibleUnit) => (
                   <CommandItem
                     key={possibleUnit}
                     value={possibleUnit}
