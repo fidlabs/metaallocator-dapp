@@ -51,7 +51,7 @@ describe("FactoryContractsWidget component", () => {
       expect(addressText).not.toBeNull();
 
       const link = queryByRole(listItem, "link", {
-        name: "View Details",
+        name: "Manage",
       });
       expect(link).not.toBeNull();
       expect((link as HTMLAnchorElement).pathname).toBe(

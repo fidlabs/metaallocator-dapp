@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Address } from "viem";
 import { useChainId } from "wagmi";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
 
 export interface FactoryContractsWidgetProps {
   factoryAddress: Address;
@@ -57,12 +58,11 @@ export function FactoryContractsWidget({
                     key={contractAddress}
                   >
                     <p>{contractAddress}</p>
-                    <Link
-                      className="underline text-dodger-blue"
-                      href={`/allocator/${chainId}/${contractAddress}`}
-                    >
-                      View Details
-                    </Link>
+                    <Button asChild>
+                      <Link href={`/allocator/${chainId}/${contractAddress}`}>
+                        Manage
+                      </Link>
+                    </Button>
                   </li>
                 ))}
               </ul>
