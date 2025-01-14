@@ -16,7 +16,7 @@ export interface SafeTransactionButtonProps
   extends Omit<LoaderButtonProps, "onError"> {
   transaction: TransactionBase | null | undefined;
   onError?(error: Error): void;
-  onSuccess?(): void;
+  onSuccess?(ethereumTransactionHash: string | void): void;
 }
 
 export function SafeTransactionButton({

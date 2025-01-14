@@ -9,7 +9,7 @@ import useWaitForTransaction from "./useWaitForTransaction";
 
 type SendTransactionInput = Parameters<SafeClient["send"]>[0];
 export type UseSendSafeTransactionOptions = Omit<
-  UseSafeClientMutationOptions<void, Error, SendTransactionInput>,
+  UseSafeClientMutationOptions<string | void, Error, SendTransactionInput>,
   "mutationKey" | "mutationSafeClientFn"
 >;
 
@@ -33,6 +33,7 @@ export function useSendSafeTransaction(
         invalidateQueries([[QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress]]);
 
         await waitForTransactionIndexed(result.transactions);
+        return result.transactions.ethereumTxHash;
       } else if (result.transactions?.safeTxHash) {
         invalidateQueries([[QueryKey.SAFE_PENDING_TRANSACTIONS, safeAddress]]);
       }

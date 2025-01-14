@@ -11,10 +11,9 @@ export default function AllocatorPage() {
     replace,
   } = useRouter();
   const chainId = useChainId();
-
-  const chainIdNumber =
-    typeof providedChainId === "string" ? parseInt(providedChainId) : NaN;
-  const invalidChain = isNaN(chainIdNumber) || chainIdNumber !== chainId;
+  const invalidChain =
+    typeof providedChainId === "string" &&
+    parseInt(providedChainId) !== chainId;
 
   useEffect(() => {
     if (invalidChain) {
