@@ -1,6 +1,7 @@
 import AllocatorDashboard from "@/components/AllocatorDashboard";
+import AppLayout from "@/components/AppLayout";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { type ReactElement, useEffect } from "react";
 import { isAddress } from "viem";
 import { useChainId } from "wagmi";
 
@@ -32,3 +33,7 @@ export default function AllocatorPage() {
     </div>
   );
 }
+
+AllocatorPage.getLayout = function getLayout(page: ReactElement) {
+  return <AppLayout>{page}</AppLayout>;
+};
