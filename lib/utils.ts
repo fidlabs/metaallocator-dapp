@@ -10,9 +10,9 @@ export function cn(...inputs: ClassValue[]) {
 export function getCustomSafeTxServiceUrl(chainId: number): string | undefined {
   switch (chainId) {
     case filecoin.id:
-      return "https://transaction.safe.filecoin.io";
+      return "https://transaction.safe.filecoin.io/api";
     case filecoinCalibration.id:
-      return "https://transaction-testnet.safe.filecoin.io";
+      return "https://transaction-testnet.safe.filecoin.io/api";
   }
 }
 
