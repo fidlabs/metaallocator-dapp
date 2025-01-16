@@ -38,10 +38,11 @@ jobs:
           NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS }}
           NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          path: ./out
+          name: build-output
+          path: ./out/
 
   # Deployment job
   deploy:
@@ -50,6 +51,11 @@ jobs:
     environment: staging-fidl
 
     steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -59,4 +65,4 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync --delete ./out s3://ajdfwwrq-qepo5tqp-production
+          aws s3 sync --delete ./out/ s3://ajdfwwrq-qepo5tqp-production
