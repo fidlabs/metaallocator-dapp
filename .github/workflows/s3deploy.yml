@@ -47,6 +47,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    environment: staging-fidl
+
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
