@@ -63,6 +63,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: List workspace files
+        run: ls -la
+
       - name: Deploy to S3
         run: |
-          aws s3 sync --delete ./out/ s3://ajdfwwrq-qepo5tqp-production
+          aws s3 sync --delete /home/runner/work/metaallocator-dapp/metaallocator-dapp s3://ajdfwwrq-qepo5tqp-production
