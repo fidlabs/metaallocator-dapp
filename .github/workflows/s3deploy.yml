@@ -1,0 +1,60 @@
+name: Deploy Next.js site to S3 Bucket
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  NEXTJS_DIST: out
+  AWS_REGION: us-east-1
+  S3_BUCKET: ajdfwwrq-qepo5tqp-production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: staging-fidl
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with Next.js
+        run: npm run build
+        env:
+          NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID }}
+          NEXT_PUBLIC_FILECOIN_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_FILECOIN_FACTORY_ADDRESS }}
+          NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS }}
+          NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
+
+  # Deployment job
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync --delete ${{ env.NEXTJS_DIST }} s3://${{ env.S3_BUCKET }}
