@@ -4,13 +4,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
-
-# env:
-#   NEXTJS_DIST: out
-#   AWS_REGION: us-east-1
-#   S3_BUCKET: ajdfwwrq-qepo5tqp-production
 
 jobs:
   build:
@@ -59,4 +54,4 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync --delete out s3://ajdfwwrq-qepo5tqp-production
+          aws s3 sync --delete ./out s3://ajdfwwrq-qepo5tqp-production
