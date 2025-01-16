@@ -57,6 +57,20 @@ jobs:
           git commit -am "Update version to ${{ inputs.version }}"
           git push origin main
 
+  staging-publish:
+    uses: ./.github/workflows/build-docker-image.yml
+    needs:
+      - code-check
+      - bump-version
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    with:
+      environment: production-fidl # staging the same as production
+      version: ${{ inputs.version }}
+    secrets: inherit
+
   production-publish:
     needs:
       - code-check
