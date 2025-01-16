@@ -7,10 +7,10 @@ permissions:
   contents: write
   id-token: write
 
-env:
-  NEXTJS_DIST: out
-  AWS_REGION: us-east-1
-  S3_BUCKET: ajdfwwrq-qepo5tqp-production
+# env:
+#   NEXTJS_DIST: out
+#   AWS_REGION: us-east-1
+#   S3_BUCKET: ajdfwwrq-qepo5tqp-production
 
 jobs:
   build:
@@ -53,8 +53,8 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Deploy to S3
         run: |
-          aws s3 sync --delete ${{ env.NEXTJS_DIST }} s3://${{ env.S3_BUCKET }}
+          aws s3 sync --delete out s3://ajdfwwrq-qepo5tqp-production
