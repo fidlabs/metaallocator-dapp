@@ -38,6 +38,11 @@ jobs:
           NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS: ${{ vars.NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS }}
           NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
 
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
   # Deployment job
   deploy:
     runs-on: ubuntu-latest
