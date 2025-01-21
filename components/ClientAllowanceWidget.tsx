@@ -1,4 +1,4 @@
-import allocatorABI from "@/abi/Allocator";
+import clientABI from "@/abi/Client";
 import { TransactionBase } from "@safe-global/types-kit";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -14,62 +14,64 @@ import {
 } from "./ui/card";
 import { Input, InputProps } from "./ui/input";
 
-export interface AllocatorAllowanceWidgetProps {
-  allocatorContractAddress: Address;
+export interface ClientAllowanceWidgetProps {
+  clientContractAddress: Address;
 }
 
 type InputChangeHandler = NonNullable<InputProps["onChange"]>;
 
-export function AllocatorAllowanceWidget({
-  allocatorContractAddress,
-}: AllocatorAllowanceWidgetProps) {
-  const [allocatorAddress, setAllocatorAddress] = useState("");
+export function ClientAllowanceWidget({
+  clientContractAddress,
+}: ClientAllowanceWidgetProps) {
+  const [clientAddress, setClientAddress] = useState("");
   const [allowance, setAllowance] = useState<bigint | null>(null);
 
-  const handleAllocatorAddressChange = useCallback<InputChangeHandler>(
-    (event) => {
-      setAllocatorAddress(event.target.value.trim());
-    },
-    []
-  );
+  const handleClientAddressChange = useCallback<InputChangeHandler>((event) => {
+    setClientAddress(event.target.value.trim());
+  }, []);
 
   const handleTransactionSuccess = useCallback(() => {
     // Reset the form value
-    setAllocatorAddress("");
+    setClientAddress("");
     setAllowance(null);
-    toast("Allowance was updated");
+    toast.success("Client allowance was updated");
+  }, []);
+
+  const handleTransactionError = useCallback((error: unknown) => {
+    toast.error("Error trying to update client allowance");
+    console.error(error);
   }, []);
 
   const transaction = useMemo<TransactionBase | null>(() => {
-    if (!isAddress(allocatorAddress) || allowance === null) {
+    if (!isAddress(clientAddress) || allowance === null) {
       return null;
     }
 
     return {
-      to: allocatorContractAddress,
+      to: clientContractAddress,
       data: encodeFunctionData({
-        abi: allocatorABI,
-        functionName: "addAllowance",
-        args: [allocatorAddress, allowance],
+        abi: clientABI,
+        functionName: "decreaseAllowance",
+        args: [clientAddress, allowance],
       }),
       value: "0",
     };
-  }, [allocatorAddress, allocatorContractAddress, allowance]);
+  }, [allowance, clientAddress, clientContractAddress]);
 
   return (
     <Card>
       <CardHeader className="flex items-center justify-between gap-2">
-        <CardTitle>Manage Allocator Allowance</CardTitle>
+        <CardTitle>Decrease Client Allowance</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Input
           placeholder="Enter allocator address"
-          value={allocatorAddress}
-          onChange={handleAllocatorAddressChange}
+          value={clientAddress}
+          onChange={handleClientAddressChange}
         />
 
         <BinaryBytesField
-          placeholder="Enter allowance amount to be added"
+          placeholder="Enter allowance amount to be removed from client"
           allowedUnits={["GiB", "TiB", "PiB"]}
           initialUnit="GiB"
           value={allowance}
@@ -81,12 +83,13 @@ export function AllocatorAllowanceWidget({
         <TransactionButton
           transaction={transaction}
           onSuccess={handleTransactionSuccess}
+          onError={handleTransactionError}
         >
-          Add Allowance
+          Decrease Allowance
         </TransactionButton>
       </CardFooter>
     </Card>
   );
 }
 
-export default AllocatorAllowanceWidget;
+export default ClientAllowanceWidget;

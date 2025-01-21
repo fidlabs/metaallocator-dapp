@@ -1,13 +1,22 @@
 "use client";
 
 import ownable2StepABI from "@/abi/Ownable2Step";
-import useOwnable2StepOwner from "@/hooks/useOwnable2StepOwner";
 import useOwnable2StepPendingOwner from "@/hooks/useOwnable2StepPendingOwner";
+import useOwnableOwner from "@/hooks/useOwnableOwner";
 import { TransactionBase } from "@safe-global/types-kit";
-import { type ChangeEventHandler, useCallback, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import {
+  type ChangeEventHandler,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+import { toast } from "sonner";
 import { Address, encodeFunctionData, isAddress, isAddressEqual } from "viem";
 import { useAccount } from "wagmi";
 import MultisigOwnershipAcceptForm from "./MultisigOwnershipAcceptForm";
+import RegularTransactionButton from "./RegularTransactionButton";
 import SafeGuard from "./SafeGuard";
 import SafeProvider from "./SafeProvider";
 import TransactionButton from "./TransactionButton";
@@ -21,23 +30,26 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import RegularTransactionButton from "./RegularTransactionButton";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 export interface ContractOwnershipWidgetProps {
   contractAddress: Address;
+  ownableType: "ownable" | "ownable2Step";
+  title?: ReactNode;
 }
 
 export function ContractOwnershipWidget({
   contractAddress,
+  ownableType,
+  title = "Manage Contract Ownership",
 }: ContractOwnershipWidgetProps) {
   const { address: accountAddress } = useAccount();
   const [tab, setTab] = useState("transfer");
   const { data: ownerAddress, refetch: refetchOwner } =
-    useOwnable2StepOwner(contractAddress);
+    useOwnableOwner(contractAddress);
   const { data: pendingOwnerAddress, refetch: refetchPendingOwner } =
-    useOwnable2StepPendingOwner(contractAddress);
+    useOwnable2StepPendingOwner(
+      ownableType === "ownable2Step" ? contractAddress : undefined
+    );
   const [newOwnerAddress, setNewOwnerAddress] = useState("");
   const hasPendingOwner =
     typeof pendingOwnerAddress !== "undefined" &&
@@ -77,16 +89,40 @@ export function ContractOwnershipWidget({
     };
   }, [contractAddress]);
 
-  const handleOwnershipTransferred = useCallback(() => {
-    setNewOwnerAddress("");
-    refetchPendingOwner().then(({ data: pendingOwnerAddress }) => {
-      if (pendingOwnerAddress && BigInt(pendingOwnerAddress) !== 0n) {
-        setTab("accept");
-      }
-    });
+  const handleOwnershipTransferred = useCallback(
+    (ethereumTransactionHash: string | undefined) => {
+      setNewOwnerAddress("");
 
-    toast("Ownership transfer was initiated");
-  }, [refetchPendingOwner]);
+      if (ownableType === "ownable") {
+        if (ethereumTransactionHash) {
+          refetchOwner();
+        }
+
+        toast(
+          ethereumTransactionHash
+            ? "Ownership was transferred successfully"
+            : "Ownership transfer awaits confirmation"
+        );
+      }
+
+      if (ownableType === "ownable2Step") {
+        if (ethereumTransactionHash) {
+          refetchPendingOwner().then(({ data: pendingOwnerAddress }) => {
+            if (pendingOwnerAddress && BigInt(pendingOwnerAddress) !== 0n) {
+              setTab("accept");
+            }
+          });
+        }
+
+        toast(
+          ethereumTransactionHash
+            ? "Ownership transfer was initiatied"
+            : "Ownership transfer awaits confirmation"
+        );
+      }
+    },
+    [ownableType, refetchOwner, refetchPendingOwner]
+  );
 
   const handleOwnershipAccepted = useCallback(() => {
     refetchOwner();
@@ -101,23 +137,26 @@ export function ContractOwnershipWidget({
       <Tabs value={tab} onValueChange={setTab}>
         <CardHeader className="flex-col items-start">
           <CardTitle className="text-lg text-primary font-semibold">
-            Manage Contract Ownership
+            {title}
           </CardTitle>
           <CardDescription>
             Current Owner: {ownerAddress ?? "-"}
           </CardDescription>
-          <TabsList className="w-full mt-4">
-            <TabsTrigger className="flex-1" value="transfer">
-              Transfer
-            </TabsTrigger>
-            <TabsTrigger
-              className="flex-1"
-              value="accept"
-              disabled={!hasPendingOwner}
-            >
-              Accept
-            </TabsTrigger>
-          </TabsList>
+
+          {ownableType === "ownable2Step" && (
+            <TabsList className="w-full mt-4">
+              <TabsTrigger className="flex-1" value="transfer">
+                Transfer
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex-1"
+                value="accept"
+                disabled={!hasPendingOwner}
+              >
+                Accept
+              </TabsTrigger>
+            </TabsList>
+          )}
         </CardHeader>
 
         <TabsContent value="transfer">
@@ -138,7 +177,7 @@ export function ContractOwnershipWidget({
           </CardFooter>
         </TabsContent>
 
-        {hasPendingOwner && (
+        {ownableType === "ownable2Step" && hasPendingOwner && (
           <TabsContent value="accept">
             <CardContent>
               <p>Ownership transfer to {pendingOwnerAddress} initiated</p>

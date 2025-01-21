@@ -1,15 +1,16 @@
 "use client";
 
 import allocatorABI from "@/abi/Allocator";
-import useOwnable2StepOwner from "@/hooks/useOwnable2StepOwner";
-import { formatBytes } from "@/lib/utils";
+import useOwnableOwner from "@/hooks/useOwnableOwner";
+import { formatBytes, shortenAddress } from "@/lib/utils";
 import type { Address, DecodeFunctionDataReturnType } from "viem";
 import AllocatorAllowanceWidget from "./AllocatorAllowanceWidget";
 import AllocatorsWidget from "./AllocatorsWidget";
+import ContractOwnershipWidget from "./ContractOwnershipWidget";
 import SafeGuard from "./SafeGuard";
 import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
-import ContractOwnershipWidget from "./ContractOwnershipWidget";
+import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -18,11 +19,27 @@ export interface AllocatorDashboardProps {
 export function AllocatorDashboard({
   allocatorContractAddress,
 }: AllocatorDashboardProps) {
-  const { data: ownerAddress } = useOwnable2StepOwner(allocatorContractAddress);
+  const { data: ownerAddress } = useOwnableOwner(allocatorContractAddress);
 
   return (
     <SafeProvider safeAddress={ownerAddress}>
       <div className="flex flex-col gap-6">
+        <ScreenBreadcrumbs
+          items={[
+            {
+              label: "Home",
+              href: "/",
+            },
+            {
+              label: "Allocators",
+              href: "/allocator",
+            },
+            {
+              label: shortenAddress(allocatorContractAddress),
+            },
+          ]}
+        />
+
         <div>
           <h1 className="text-lg text-center font-semibold">Allocator</h1>
           <p className="text-sm text-center text-muted-foreground">
@@ -33,7 +50,10 @@ export function AllocatorDashboard({
         <AllocatorAllowanceWidget
           allocatorContractAddress={allocatorContractAddress}
         />
-        <ContractOwnershipWidget contractAddress={allocatorContractAddress} />
+        <ContractOwnershipWidget
+          contractAddress={allocatorContractAddress}
+          ownableType="ownable2Step"
+        />
         <SafeGuard>
           <SafePendingTransactionsList
             targetFilter={{

@@ -7,10 +7,12 @@ import SafeGuard from "./SafeGuard";
 import SafeTransactionButton from "./SafeTransactionButton";
 import { ButtonProps } from "./ui/button";
 
+export type TransactionType = "safe" | "regular";
+
 export interface TransactionButtonProps extends Omit<ButtonProps, "onError"> {
   transaction: TransactionBase | null | undefined;
   onError?(error: Error): void;
-  onSuccess?(): void;
+  onSuccess?(ethereumTransactionHash: string | void): void;
 }
 
 export function TransactionButton({

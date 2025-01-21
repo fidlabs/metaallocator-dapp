@@ -3,6 +3,11 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { filecoin, filecoinCalibration } from "wagmi/chains";
 
+interface ShortenAddressOptions {
+  leading?: number;
+  trailing?: number;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -46,4 +51,13 @@ export function wait(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+export function shortenAddress(
+  address: string,
+  options: ShortenAddressOptions = {}
+): string {
+  const { leading = 4, trailing = 4 } = options;
+
+  return address.slice(0, leading) + "..." + address.slice(-trailing);
 }

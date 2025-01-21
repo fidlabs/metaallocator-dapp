@@ -1,27 +1,25 @@
-import {
-  FILECOIN_CALIBRATION_FACTORY_ADDRESS,
-  FILECOIN_FACTORY_ADDRESS,
-} from "@/constants";
+import contractsConfigMap from "@/config/contracts";
 import type { Address } from "viem";
 import { filecoin, filecoinCalibration } from "viem/chains";
 import { useChainId } from "wagmi";
 
-const factoriesMap: Record<number, Address | null> = {
-  [filecoin.id]: FILECOIN_FACTORY_ADDRESS,
-  [filecoinCalibration.id]: FILECOIN_CALIBRATION_FACTORY_ADDRESS,
-};
-
 export function useFactoryAddress(): Address {
   const chainId = useChainId();
-  const maybeFactoryAddress = factoriesMap[chainId];
+  const maybeFactoryAddress = extractFactoryAddress(chainId);
 
-  if (maybeFactoryAddress === null) {
+  if (typeof maybeFactoryAddress !== "string") {
     throw new Error(
       `Factory address is not configured for chain ${chainId.toString()}`
     );
   }
 
   return maybeFactoryAddress;
+}
+
+function extractFactoryAddress(chainId: number): Address | undefined {
+  if (chainId === filecoin.id || chainId === filecoinCalibration.id) {
+    return contractsConfigMap.get(chainId)?.factoryAddress;
+  }
 }
 
 export default useFactoryAddress;
