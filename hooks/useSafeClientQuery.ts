@@ -10,14 +10,14 @@ import { useCallback } from "react";
 import useSafeContext from "./useSafeContext";
 
 export type QuerySafeClientFunctionContext<
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 > = QueryFunctionContext<TQueryKey> & {
   safeClient: SafeClient;
 };
 export type UseSafeClientQueryOptions<
   TData = unknown,
   TError = Error,
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 > = Omit<UseQueryOptions<TData, TError, TQueryKey>, "queryFn"> & {
   querySafeClientFn: (
     context: QuerySafeClientFunctionContext<TQueryKey>
@@ -27,7 +27,7 @@ export type UseSafeClientQueryOptions<
 export function useSafeClientQuery<
   TData = unknown,
   TError = Error,
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 >({
   querySafeClientFn,
   ...options

@@ -11,7 +11,7 @@ export type UseSafeClientMutationOptions<
   TData = unknown,
   TError = Error,
   TVariables = void,
-  TContext = unknown
+  TContext = unknown,
 > = Omit<MutationOptions<TData, TError, TVariables, TContext>, "mutationFn"> & {
   mutationSafeClientFn: (
     client: SafeClient,
@@ -23,7 +23,7 @@ export function useSafeClientMutation<
   TData = unknown,
   TError = Error,
   TVariables = void,
-  TContext = unknown
+  TContext = unknown,
 >({
   mutationSafeClientFn,
   ...options

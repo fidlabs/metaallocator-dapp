@@ -21,7 +21,7 @@ export type UseReadContractEveryBlockParameters<
     functionName
   > = ContractFunctionArgs<abi, "pure" | "view", functionName>,
   config extends Config = Config,
-  selectData = ReadContractData<abi, functionName, args>
+  selectData = ReadContractData<abi, functionName, args>,
 > = UseReadContractParameters<abi, functionName, args, config, selectData> & {
   throttle?: number;
 };
@@ -31,7 +31,7 @@ export function useReadContractEveryBlock<
   functionName extends ContractFunctionName<abi, "pure" | "view">,
   args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
   config extends Config = ResolvedRegister["config"],
-  selectData = ReadContractData<abi, functionName, args>
+  selectData = ReadContractData<abi, functionName, args>,
 >(
   parameters: UseReadContractEveryBlockParameters<
     abi,
