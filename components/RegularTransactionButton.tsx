@@ -8,7 +8,8 @@ export interface RegularTransactionButtonProps
   extends Omit<LoaderButtonProps, "onError"> {
   transaction: TransactionBase | null | undefined;
   onError?(error: Error): void;
-  onSuccess?(): void;
+  onSuccess?(ethereumTransactionHash: string): void;
+  onTransactionHash?(transactionHash: Hex): void;
 }
 
 type ClickHandler = NonNullable<LoaderButtonProps["onClick"]>;
@@ -21,15 +22,27 @@ export function RegularTransactionButton({
   onClick,
   onError,
   onSuccess,
+  onTransactionHash,
   ...rest
 }: RegularTransactionButtonProps) {
   const [transactionHash, setTransactionHash] = useState<Hex>();
+
+  const handleSendTransaction = useCallback(() => {
+    setTransactionHash(undefined);
+  }, []);
+
+  const handleSendTransactionSuccess = useCallback(
+    (nextTransactionHash: Hex) => {
+      setTransactionHash(nextTransactionHash);
+      onTransactionHash?.(nextTransactionHash);
+    },
+    [onTransactionHash]
+  );
+
   const { sendTransaction, status: sendStatus } = useSendTransaction({
     mutation: {
-      onMutate() {
-        setTransactionHash(undefined);
-      },
-      onSuccess: setTransactionHash,
+      onMutate: handleSendTransaction,
+      onSuccess: handleSendTransactionSuccess,
       onError,
     },
   });
@@ -52,11 +65,11 @@ export function RegularTransactionButton({
   }, [error, onError]);
 
   useEffect(() => {
-    if (waitStatus === "success") {
+    if (!!transactionHash && waitStatus === "success") {
+      onSuccess?.(transactionHash);
       setTransactionHash(undefined);
-      onSuccess?.();
     }
-  }, [onSuccess, waitStatus]);
+  }, [onSuccess, transactionHash, waitStatus]);
 
   const handleClick = useCallback<ClickHandler>(
     (event) => {

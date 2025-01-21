@@ -1,16 +1,14 @@
-import {
-  FILECOIN_CALIBRATION_FACTORY_ADDRESS,
-  FILECOIN_FACTORY_ADDRESS,
-  WALLETCONNECT_PROJECT_ID,
-} from "@/constants";
+import { WALLETCONNECT_PROJECT_ID } from "@/constants";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   ledgerWallet,
   metaMaskWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { extractChain } from "viem";
 import { createConfig, http } from "wagmi";
 import { Chain, filecoin, filecoinCalibration } from "wagmi/chains";
+import contractsConfigMap from "./contracts";
 
 interface AppInfo {
   appName: string;
@@ -32,21 +30,27 @@ const connectors = connectorsForWallets(
   appInfo
 );
 
-export const wagmiConfig =
-  FILECOIN_FACTORY_ADDRESS || FILECOIN_CALIBRATION_FACTORY_ADDRESS
-    ? createConfig({
-        connectors,
-        chains: [
-          FILECOIN_FACTORY_ADDRESS ? filecoin : undefined,
-          FILECOIN_CALIBRATION_FACTORY_ADDRESS
-            ? filecoinCalibration
-            : undefined,
-        ].filter((chain) => !!chain) as unknown as [Chain, ...Chain[]],
-        transports: {
-          [filecoin.id]: http(),
-          [filecoinCalibration.id]: http(),
-        },
+const chains = Array.from(contractsConfigMap.keys())
+  .filter((chainId) => contractsConfigMap.get(chainId) != null)
+  .map((chainId) => {
+    return extractChain({
+      chains: [filecoin, filecoinCalibration],
+      id: chainId,
+    });
+  });
 
-        ssr: true,
-      })
-    : null;
+function isNotEmptyChainsList(input: Chain[]): input is [Chain, ...Chain[]] {
+  return input.length > 0;
+}
+
+export const wagmiConfig = isNotEmptyChainsList(chains)
+  ? createConfig({
+      connectors,
+      chains,
+      transports: {
+        [filecoin.id]: http(),
+        [filecoinCalibration.id]: http(),
+      },
+      ssr: true,
+    })
+  : null;

@@ -11,6 +11,9 @@ export enum MutatationKey {
   SEND_SAFE_TRANSACTION = "send_safe_transaction",
 }
 
+export const TESTNET_ENABLED = envVariableToBoolean(
+  process.env["NEXT_PUBLIC_ENABLE_TESTNET"]
+);
 export const WALLETCONNECT_PROJECT_ID =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
@@ -20,6 +23,10 @@ export const FILECOIN_FACTORY_ADDRESS = addressOrNull(
 export const FILECOIN_CALIBRATION_FACTORY_ADDRESS = addressOrNull(
   process.env.NEXT_PUBLIC_FILECOIN_CALIBRATION_FACTORY_ADDRESS
 );
+
+function envVariableToBoolean(input: string | undefined): boolean {
+  return input?.toLowerCase() === "true";
+}
 
 function addressOrNull(input: unknown): Address | null {
   if (typeof input !== "string") {
