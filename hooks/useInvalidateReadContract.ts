@@ -11,7 +11,7 @@ export function useInvaldateReadContract() {
       abi extends Abi | readonly unknown[],
       functionName extends ContractFunctionName<abi, "pure" | "view">,
       args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
-      config extends Config
+      config extends Config,
     >(
       options: ReadContractOptions<abi, functionName, args, config>
     ) => {
