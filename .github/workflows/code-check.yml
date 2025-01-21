@@ -1,4 +1,4 @@
-name: Check linter & formatting
+name: Check linter & formatting & test
 
 on:
   workflow_call:
@@ -24,3 +24,6 @@ jobs:
 
       - name: Run Prettier
         run: npm run prettier
+
+      - name: Run Unit Tests
+        run: npm test
