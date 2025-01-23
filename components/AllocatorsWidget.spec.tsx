@@ -58,7 +58,7 @@ describe("AllocatorsWidget component", () => {
           allocatorAddress: mockAllocatorAddress,
           allocatorContractAddress: testContractAddress,
         }),
-        expect.anything()
+        undefined
       );
     });
   });
