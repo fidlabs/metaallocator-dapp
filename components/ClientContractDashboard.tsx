@@ -32,7 +32,7 @@ export default function ClientContractDashboard({
           },
           {
             label: "Clients",
-            href: "/client",
+            href: "/beacon-proxy-factory",
           },
           {
             label: shortenAddress(clientContractAddress),

@@ -1,7 +1,6 @@
 "use client";
 
 import factoryABI from "@/abi/Factory";
-import AppLayout from "@/components/AppLayout";
 import ContractOwnershipWidget from "@/components/ContractOwnershipWidget";
 import FactoryContractDeployWidget from "@/components/FactoryContractDeployWidget";
 import FactoryContractsWidget from "@/components/FactoryContractsWidget";
@@ -12,7 +11,6 @@ import ScreenBreadcrumbs from "@/components/ScreenBreadcrumbs";
 import SetImplementationWidget from "@/components/SetImplementationWidget";
 import useFactoryAddress from "@/hooks/useFactoryAddress";
 import useFactoryOwner from "@/hooks/useFactoryOwner";
-import type { ReactElement } from "react";
 import type { DecodeFunctionDataReturnType } from "viem";
 
 export default function AllocatorPage() {
@@ -61,10 +59,6 @@ export default function AllocatorPage() {
     </SafeProvider>
   );
 }
-
-AllocatorPage.getLayout = function getLayout(page: ReactElement) {
-  return <AppLayout>{page}</AppLayout>;
-};
 
 function formatTransactionTitle(
   functionData: DecodeFunctionDataReturnType<typeof factoryABI>

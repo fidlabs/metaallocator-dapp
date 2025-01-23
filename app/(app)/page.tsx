@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import ScreenBreadcrumbs from "@/components/ScreenBreadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import type { ReactElement } from "react";
 
 export default function HomePage() {
   return (
@@ -52,7 +50,7 @@ export default function HomePage() {
           </CardContent>
           <CardFooter className="justify-center">
             <Button asChild>
-              <Link href="/client">Manage Clients</Link>
+              <Link href="/beacon-proxy-factory">Manage Clients</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -60,7 +58,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-HomePage.getLayout = function getLayout(page: ReactElement) {
-  return <AppLayout>{page}</AppLayout>;
-};

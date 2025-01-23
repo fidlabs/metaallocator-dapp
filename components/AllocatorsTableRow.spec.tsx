@@ -28,7 +28,7 @@ describe("AllocatorsTableRow component", () => {
           return (
             <LoaderButton
               {...rest}
-              onClick={onSuccess}
+              onClick={() => onSuccess?.()}
               disabled={disabled || !transaction}
             >
               {children}
@@ -92,7 +92,7 @@ describe("AllocatorsTableRow component", () => {
           value: "0",
         },
       }),
-      expect.anything()
+      undefined
     );
 
     const resetButton = getByRole(actionsCell, "button", {

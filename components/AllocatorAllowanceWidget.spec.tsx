@@ -20,7 +20,7 @@ const TransactionButtonSpy = vi
       return (
         <LoaderButton
           {...rest}
-          onClick={onSuccess}
+          onClick={() => onSuccess?.(undefined)}
           disabled={disabled || !transaction}
         >
           {children}
@@ -70,7 +70,7 @@ describe("AllocatorAllowanceWidget component", () => {
           value: "0",
         },
       }),
-      expect.anything()
+      undefined
     );
 
     const button = getByRole("button", { name: "Add Allowance" });

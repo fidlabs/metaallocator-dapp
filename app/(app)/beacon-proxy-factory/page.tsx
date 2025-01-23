@@ -2,10 +2,10 @@
 
 import ownableABI from "@/abi/Ownable";
 import upgradableBeaconABI from "@/abi/UpgradableBeacon";
-import AppLayout from "@/components/AppLayout";
 import BeaconUpgradeWidget from "@/components/BeaconUpgradeWidget";
 import ContractOwnershipWidget from "@/components/ContractOwnershipWidget";
 import CreateClientWidget from "@/components/CreateClientWidget";
+import ManageClientContractWidget from "@/components/ManageClientContractWidget";
 import SafeGuard from "@/components/SafeGuard";
 import SafePendingTransactionsList from "@/components/SafePendingTransactionsList";
 import SafeProvider from "@/components/SafeProvider";
@@ -13,7 +13,6 @@ import useBeaconProxyFactoryAddress from "@/hooks/useBeaconProxyFactoryAddress";
 import useBeaconProxyFactoryBeaconAddress from "@/hooks/useBeaconProxyFactoryBeaconAddress";
 import useOwnableOwner from "@/hooks/useOwnableOwner";
 import { Loader2 } from "lucide-react";
-import { type ReactElement } from "react";
 import type { DecodeFunctionDataReturnType } from "viem";
 import { useWatchContractEvent } from "wagmi";
 
@@ -52,6 +51,8 @@ export default function BeaconProxyFactoryPage() {
         </p>
       </div>
 
+      <ManageClientContractWidget />
+
       <CreateClientWidget
         beaconProxyFactoryAddress={beaconProxyFactoryAddress}
       />
@@ -84,10 +85,6 @@ export default function BeaconProxyFactoryPage() {
     </div>
   );
 }
-
-BeaconProxyFactoryPage.getLayout = function getLayout(page: ReactElement) {
-  return <AppLayout>{page}</AppLayout>;
-};
 
 function formatTransactionTitle(
   functionData: DecodeFunctionDataReturnType<typeof upgradableBeaconABI>

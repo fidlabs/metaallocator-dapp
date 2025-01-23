@@ -30,7 +30,7 @@ describe("SetImplementationWidget component", () => {
           return (
             <LoaderButton
               {...rest}
-              onClick={onSuccess}
+              onClick={() => onSuccess?.()}
               disabled={disabled || !transaction}
             >
               {children}
@@ -69,7 +69,7 @@ describe("SetImplementationWidget component", () => {
           value: "0",
         },
       }),
-      expect.anything()
+      undefined
     );
 
     // State is cleared after deployment and toast is displayed

@@ -1,9 +1,10 @@
 import Providers from "@/components/Providers";
+import { Toaster } from "@/components/ui/sonner";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
-export function AppLayout({ children }: PropsWithChildren) {
+export default function AppLayout({ children }: PropsWithChildren) {
   return (
     <Providers>
       <header className="container mx-auto py-3 flex justify-between items-center gap-6 mb-12">
@@ -16,8 +17,7 @@ export function AppLayout({ children }: PropsWithChildren) {
         <ConnectButton />
       </header>
       {children}
+      <Toaster />
     </Providers>
   );
 }
-
-export default AppLayout;
