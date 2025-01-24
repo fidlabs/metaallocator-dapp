@@ -48,7 +48,7 @@ export default function ClientContractDashboard({
           {clientContractAddress}
         </p>
         <Button asChild className="mt-4">
-          <Link href="/client">Change Client Contract</Link>
+          <Link href="/beacon-proxy-factory">Change Client Contract</Link>
         </Button>
       </div>
 
