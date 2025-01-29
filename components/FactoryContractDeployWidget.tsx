@@ -1,8 +1,9 @@
 import factoryABI from "@/abi/Factory";
 import type { TransactionBase } from "@safe-global/types-kit";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { encodeFunctionData, isAddress } from "viem";
-import TransactionButton from "./TransactionButton";
+import RegularTransactionButton from "./RegularTransactionButton";
 import {
   Card,
   CardContent,
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input, type InputProps } from "./ui/input";
-import { toast } from "sonner";
 
 export interface FactoryContractDeployWidgetProps {
   factoryAddress: string;
@@ -45,7 +45,12 @@ export function FactoryContractDeployWidget({
 
   const handleTransactionSuccess = useCallback(() => {
     setInitialOwnerAddress("");
-    toast("Contract was deployed");
+    toast.success("Contract was deployed");
+  }, []);
+
+  const handleTransactionError = useCallback((error: unknown) => {
+    toast.error("An error occured when deploying new allocator contract");
+    console.error(error);
   }, []);
 
   return (
@@ -63,12 +68,13 @@ export function FactoryContractDeployWidget({
       </CardContent>
 
       <CardFooter className="justify-end">
-        <TransactionButton
+        <RegularTransactionButton
           transaction={transaction}
           onSuccess={handleTransactionSuccess}
+          onError={handleTransactionError}
         >
           Deploy
-        </TransactionButton>
+        </RegularTransactionButton>
       </CardFooter>
     </Card>
   );
