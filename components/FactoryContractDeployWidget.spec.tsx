@@ -3,7 +3,7 @@ import { cleanup, fireEvent } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import FactoryContractDeployWidget from "./FactoryContractDeployWidget";
 import { Address, encodeFunctionData } from "viem";
-import * as TransactionButtonComponents from "./TransactionButton";
+import * as RegularTransactionButtonComponents from "./RegularTransactionButton";
 import LoaderButton from "./LoaderButton";
 import { toast } from "sonner";
 import factoryABI from "@/abi/Factory";
@@ -23,14 +23,14 @@ describe("FactoryContractDeployWidget component", () => {
       "0x0000000000000000000000000000000000000002";
 
     const TransactionButtonSpy = vi
-      .spyOn(TransactionButtonComponents, "default")
+      .spyOn(RegularTransactionButtonComponents, "default")
       .mockImplementation(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ({ children, disabled, transaction, onSuccess, onError, ...rest }) => {
           return (
             <LoaderButton
               {...rest}
-              onClick={() => onSuccess?.()}
+              onClick={() => onSuccess?.("0x0")}
               disabled={disabled || !transaction}
             >
               {children}
@@ -76,6 +76,6 @@ describe("FactoryContractDeployWidget component", () => {
     fireEvent.click(button);
     expect(input).toHaveValue("");
     expect(button).toBeDisabled();
-    expect(toast).toHaveBeenCalledWith("Contract was deployed");
+    expect(toast.success).toHaveBeenCalledWith("Contract was deployed");
   });
 });
