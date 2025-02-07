@@ -6,6 +6,7 @@ import type { Address } from "viem";
 import { useChainId } from "wagmi";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import { AllocatorDatacap } from "./AllocatorDatacap";
 
 export interface FactoryContractsWidgetProps {
   factoryAddress: Address;
@@ -57,7 +58,15 @@ export function FactoryContractsWidget({
                     className="flex justify-between items-center gap-4 odd:bg-gray-100 px-6 py-4"
                     key={contractAddress}
                   >
-                    <p>{contractAddress}</p>
+                    <div>
+                      <p className="text-md font-medium">{contractAddress}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Datacap:{" "}
+                        <AllocatorDatacap
+                          allocatorContractAddress={contractAddress}
+                        />
+                      </p>
+                    </div>
                     <Button asChild>
                       <Link href={`/allocator/${chainId}/${contractAddress}`}>
                         Manage
