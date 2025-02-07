@@ -1,0 +1,70 @@
+import { QueryKey } from "@/constants";
+import { QueryFunction, useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
+import type { Address, EIP1193RequestFn } from "viem";
+import { useClient } from "wagmi";
+
+type FilecoinRPCSchema = [
+  {
+    Method: "Filecoin.EthAddressToFilecoinAddress";
+    Parameters: [ethAddress: Address];
+    ReturnType: string;
+  },
+  {
+    Method: "Filecoin.StateVerifierStatus";
+    Parameters: [filecoinAddress: string, null];
+    ReturnType: string | null;
+  },
+];
+
+type UseAddressDatacapQueryKey = [QueryKey.ADDRESS_DATACAP, Address];
+type UseAddressDatacapReturnType = bigint;
+
+export function useAddressDatacap(address: Address) {
+  const client = useClient();
+
+  const queryFn = useCallback<
+    QueryFunction<UseAddressDatacapReturnType, UseAddressDatacapQueryKey>
+  >(async ({ queryKey }) => {
+    const [, address] = queryKey;
+
+    if (!client) {
+      throw new Error("Wagmi client not initialized");
+    }
+
+    const request = client.request as EIP1193RequestFn<FilecoinRPCSchema>;
+
+    const filecoinAddress = await request({
+      method: "Filecoin.EthAddressToFilecoinAddress",
+      params: [address],
+    });
+
+    if (typeof filecoinAddress !== "string") {
+      throw new Error(
+        "Invalid response when converting ETH address to Filecoin address"
+      );
+    }
+
+    const datacap = await request({
+      method: "Filecoin.StateVerifierStatus",
+      params: [filecoinAddress, null],
+    });
+
+    if (datacap === null) {
+      return 0n;
+    }
+
+    if (typeof datacap !== "string") {
+      throw new Error(
+        `Invalid response when getting datacap of address ${filecoinAddress}. Type ${typeof datacap} is not string.`
+      );
+    }
+
+    return BigInt(datacap);
+  }, []);
+
+  return useQuery({
+    queryFn,
+    queryKey: [QueryKey.ADDRESS_DATACAP, address],
+  });
+}

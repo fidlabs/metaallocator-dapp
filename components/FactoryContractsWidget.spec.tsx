@@ -1,3 +1,5 @@
+import * as useAddressDatacapHooks from "@/hooks/useAddressDatacap";
+import * as useFactoryContractHooks from "@/hooks/useFactoryContracts";
 import {
   cleanup,
   getAllByRole,
@@ -8,7 +10,6 @@ import {
 import { type Address } from "viem";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import FactoryContractsWidget from "./FactoryContractsWidget";
-import * as useFactoryContractHooks from "@/hooks/useFactoryContracts";
 
 const testChainId: number = 1;
 const testFactoryAddress: Address = "0x0";
@@ -19,6 +20,10 @@ vi.mock("wagmi", () => ({
 }));
 
 const useFactoryContractSpy = vi.spyOn(useFactoryContractHooks, "default");
+const useAddressDatacapSpy = vi.spyOn(
+  useAddressDatacapHooks,
+  "useAddressDatacap"
+);
 
 describe("FactoryContractsWidget component", () => {
   afterEach(() => {
@@ -32,6 +37,15 @@ describe("FactoryContractsWidget component", () => {
         isLoading: false,
         error: undefined,
         data: testContracts,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any; // mocking only what we need
+    });
+
+    useAddressDatacapSpy.mockImplementation(() => {
+      return {
+        isLoading: false,
+        error: undefined,
+        data: 0n,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any; // mocking only what we need
     });

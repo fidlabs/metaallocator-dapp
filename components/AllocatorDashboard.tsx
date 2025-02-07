@@ -11,6 +11,7 @@ import SafeGuard from "./SafeGuard";
 import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
 import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
+import { AllocatorDatacapCard } from "./AllocatorDatacapCard";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -46,6 +47,9 @@ export function AllocatorDashboard({
             {allocatorContractAddress}
           </p>
         </div>
+        <AllocatorDatacapCard
+          allocatorContractAddress={allocatorContractAddress}
+        />
         <AllocatorsWidget allocatorContractAddress={allocatorContractAddress} />
         <AllocatorAllowanceWidget
           allocatorContractAddress={allocatorContractAddress}
