@@ -22,13 +22,6 @@ export function getCustomSafeTxServiceUrl(chainId: number): string | undefined {
 }
 
 export function formatBytes(input: bigint | number): string {
-  if (
-    typeof input === "bigint" &&
-    (input > Number.MAX_SAFE_INTEGER || input < Number.MIN_SAFE_INTEGER)
-  ) {
-    throw new Error("Input out of range");
-  }
-
   return bytes.format(Number(input), { mode: "binary" }) ?? "";
 }
 
