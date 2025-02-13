@@ -5,6 +5,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
+import { RainbowKitDisclaimer } from "./RainbowKitDisclaimer";
 
 const client = new QueryClient();
 
@@ -20,7 +21,14 @@ export function Providers({ children }: Props) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={client}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider
+          modalSize="compact"
+          appInfo={{
+            disclaimer: RainbowKitDisclaimer,
+          }}
+        >
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

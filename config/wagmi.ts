@@ -1,7 +1,6 @@
 import { WALLETCONNECT_PROJECT_ID } from "@/constants";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
-  ledgerWallet,
   metaMaskWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
@@ -24,7 +23,7 @@ const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [metaMaskWallet, ledgerWallet, walletConnectWallet],
+      wallets: [metaMaskWallet, walletConnectWallet],
     },
   ],
   appInfo
