@@ -2,17 +2,18 @@
 
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { HTMLAttributes, useCallback, useMemo, useState } from "react";
+import { type HTMLAttributes, useCallback, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command";
-import { Input, InputProps } from "./ui/input";
+import { Input, type InputProps } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
+type MaybeBigint = bigint | null;
 type ResolvedUnitsList<UnitT extends UnitsList | void> = UnitT extends void
   ? typeof units
   : UnitT;
 type Unit = (typeof units)[number];
-type Value = bigint | null;
+type Value = MaybeBigint | string;
 type ChangeHandler = NonNullable<InputProps["onChange"]>;
 export type UnitsList = readonly [Unit, ...Unit[]];
 type BaseProps = Omit<HTMLAttributes<HTMLDivElement>, "children">;
@@ -72,7 +73,7 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
       : uncontrolledValue;
 
   const getBigIntValue = useCallback(
-    (stringValue: string): Value | undefined => {
+    (stringValue: string): MaybeBigint => {
       if (stringValue === "") {
         return null;
       }
@@ -80,7 +81,7 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
       const intValue = parseInt(stringValue);
 
       if (isNaN(intValue)) {
-        return;
+        return null;
       }
 
       const bigIntValue = BigInt(intValue) * magnitudeToBytes(magnitude);
@@ -90,7 +91,7 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
   );
 
   const updateValue = useCallback(
-    (nextValue: Value) => {
+    (nextValue: MaybeBigint) => {
       if (nextValue === value) {
         return;
       }
@@ -102,11 +103,12 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
   );
 
   const inputValue = useMemo(() => {
-    if (value === null) {
+    if (value === null || value === "") {
       return "";
     }
 
-    return (value / magnitudeToBytes(magnitude)).toString();
+    const bigintValue = typeof value === "string" ? BigInt(value) : value;
+    return (bigintValue / magnitudeToBytes(magnitude)).toString();
   }, [magnitude, value]);
 
   const handleInputChange = useCallback<ChangeHandler>(
@@ -128,7 +130,7 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
       const nextValue =
         value === null
           ? null
-          : (value * magnitudeToBytes(nextMagnitude)) /
+          : (BigInt(value) * magnitudeToBytes(nextMagnitude)) /
             magnitudeToBytes(magnitude);
 
       updateValue(nextValue);
