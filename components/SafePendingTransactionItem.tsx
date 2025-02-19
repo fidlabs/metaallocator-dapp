@@ -74,16 +74,25 @@ function getTransactionTitle<const abi extends Abi>(
     return tx.safeTxHash;
   }
 
-  const functionData = decodeFunctionData({
-    abi: target.abi,
-    data: tx.data as Hex,
-  });
+  try {
+    const functionData = decodeFunctionData({
+      abi: target.abi,
+      data: tx.data as Hex,
+    });
 
-  const argumentsString = Array.isArray(functionData.args)
-    ? functionData.args.map((arg) => `"${String(arg)}"`).join(", ")
-    : "";
-  const defaultTransactionTitle = `${functionData.functionName}(${argumentsString})`;
+    const argumentsString = Array.isArray(functionData.args)
+      ? functionData.args.map((arg) => `"${String(arg)}"`).join(", ")
+      : "";
+    const defaultTransactionTitle = `${functionData.functionName}(${argumentsString})`;
+    const customTransactionTitle =
+      target.formatTransactionTitle?.(functionData);
+    return customTransactionTitle || defaultTransactionTitle;
+  } catch (error) {
+    console.warn(
+      `Error parsing transaction title for target  ${target.address}`,
+      error
+    );
 
-  const customTransactionTitle = target.formatTransactionTitle?.(functionData);
-  return customTransactionTitle || defaultTransactionTitle;
+    return tx.safeTxHash;
+  }
 }

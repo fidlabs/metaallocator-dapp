@@ -54,3 +54,7 @@ export function shortenAddress(
 
   return address.slice(0, leading) + "..." + address.slice(-trailing);
 }
+
+export function unknownToError(input: unknown): Error {
+  return input instanceof Error ? input : new Error(String(input));
+}

@@ -59,7 +59,7 @@ export function SafePendingTransactionsList<const abi extends Abi>({
 
             {visibleTransactions.length > 0 && (
               <div className="-mx-6">
-                {pendingTransactions.map((pendingTx, index) => {
+                {visibleTransactions.map((pendingTx, index) => {
                   return (
                     <SafePendingTransactionItem<abi>
                       key={pendingTx.safeTxHash}
