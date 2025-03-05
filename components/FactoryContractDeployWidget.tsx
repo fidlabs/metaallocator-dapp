@@ -12,6 +12,8 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input, type InputProps } from "./ui/input";
+import { Button } from "@fidlabs/common-react-ui";
+import Link from "next/link";
 
 export interface FactoryContractDeployWidgetProps {
   factoryAddress: string;
@@ -67,7 +69,28 @@ export function FactoryContractDeployWidget({
         />
       </CardContent>
 
-      <CardFooter className="justify-end">
+      <CardFooter className="justify-between">
+        <p className="text-sm text-muted-foreground">
+          Created contracts are instance of <code>Allocator.sol</code> (
+          <Button asChild variant="link">
+            <Link
+              href="https://github.com/fidlabs/contract-metaallocator/blob/main/src/Allocator.sol"
+              target="_blank"
+            >
+              source code
+            </Link>
+          </Button>
+          ), deployed via the <code>Factory.sol</code> contract (
+          <Button asChild variant="link">
+            <Link
+              href="https://github.com/fidlabs/contract-metaallocator/blob/main/src/Factory.sol"
+              target="_blank"
+            >
+              source code
+            </Link>
+          </Button>
+          ).
+        </p>
         <RegularTransactionButton
           transaction={transaction}
           onSuccess={handleTransactionSuccess}
