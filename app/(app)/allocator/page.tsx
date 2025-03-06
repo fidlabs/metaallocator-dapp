@@ -9,8 +9,8 @@ import SafePendingTransactionsList from "@/components/SafePendingTransactionsLis
 import SafeProvider from "@/components/SafeProvider";
 import ScreenBreadcrumbs from "@/components/ScreenBreadcrumbs";
 import SetImplementationWidget from "@/components/SetImplementationWidget";
+import { useFactoryOwner } from "@/hooks/use-factory-owner";
 import useFactoryAddress from "@/hooks/useFactoryAddress";
-import useFactoryOwner from "@/hooks/useFactoryOwner";
 import type { DecodeFunctionDataReturnType } from "viem";
 
 export default function AllocatorPage() {
