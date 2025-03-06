@@ -7,7 +7,7 @@ import SafeGuard from "@/components/SafeGuard";
 import SafePendingTransactionsList from "@/components/SafePendingTransactionsList";
 import SafeProvider from "@/components/SafeProvider";
 import { Button } from "@/components/ui/button";
-import useOwnableOwner from "@/hooks/useOwnableOwner";
+import { useOwnableOwner } from "@/hooks/use-ownable-owner";
 import { formatBytes, shortenAddress } from "@/lib/utils";
 import Link from "next/link";
 import { type Address, type DecodeFunctionDataReturnType } from "viem";
@@ -20,7 +20,10 @@ export interface ClientContractDashboardProps {
 export default function ClientContractDashboard({
   clientContractAddress,
 }: ClientContractDashboardProps) {
-  const { data: clientContractOwner } = useOwnableOwner(clientContractAddress);
+  const { data: clientContractOwner } = useOwnableOwner({
+    contractAddress: clientContractAddress,
+    refetchOnEvents: true,
+  });
 
   return (
     <div className="container mx-auto flex flex-col gap-6 pb-10">
