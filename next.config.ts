@@ -1,15 +1,10 @@
-const { withSentryConfig } = require("@sentry/nextjs");
+import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   output: "standalone",
-  trailingSlash: true,
   reactStrictMode: true,
-  webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding");
-    return config;
-  },
 };
 
 module.exports = withSentryConfig(nextConfig, {
