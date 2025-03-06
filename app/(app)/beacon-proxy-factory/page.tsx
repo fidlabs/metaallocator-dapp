@@ -1,6 +1,5 @@
 "use client";
 
-import ownableABI from "@/abi/Ownable";
 import upgradableBeaconABI from "@/abi/UpgradableBeacon";
 import BeaconUpgradeWidget from "@/components/BeaconUpgradeWidget";
 import ContractOwnershipWidget from "@/components/ContractOwnershipWidget";
@@ -9,12 +8,11 @@ import ManageClientContractWidget from "@/components/ManageClientContractWidget"
 import SafeGuard from "@/components/SafeGuard";
 import SafePendingTransactionsList from "@/components/SafePendingTransactionsList";
 import SafeProvider from "@/components/SafeProvider";
+import { useOwnableOwner } from "@/hooks/use-ownable-owner";
 import useBeaconProxyFactoryAddress from "@/hooks/useBeaconProxyFactoryAddress";
 import useBeaconProxyFactoryBeaconAddress from "@/hooks/useBeaconProxyFactoryBeaconAddress";
-import useOwnableOwner from "@/hooks/useOwnableOwner";
 import { Loader2 } from "lucide-react";
 import type { DecodeFunctionDataReturnType } from "viem";
-import { useWatchContractEvent } from "wagmi";
 
 function Loader() {
   return (
@@ -28,16 +26,9 @@ export default function BeaconProxyFactoryPage() {
   const beaconProxyFactoryAddress = useBeaconProxyFactoryAddress();
   const { data: maybeUpgradableBeaconAddress } =
     useBeaconProxyFactoryBeaconAddress(beaconProxyFactoryAddress);
-  const {
-    data: maybeUpgradableBeaconOwnerAddress,
-    refetch: refetchBeaconOwnerAddress,
-  } = useOwnableOwner(maybeUpgradableBeaconAddress);
-
-  useWatchContractEvent({
-    abi: ownableABI,
-    address: maybeUpgradableBeaconAddress,
-    eventName: "OwnershipTransferred",
-    onLogs: () => refetchBeaconOwnerAddress(),
+  const { data: maybeUpgradableBeaconOwnerAddress } = useOwnableOwner({
+    contractAddress: maybeUpgradableBeaconAddress,
+    refetchOnEvents: true,
   });
 
   return (

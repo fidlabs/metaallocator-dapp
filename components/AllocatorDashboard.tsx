@@ -1,17 +1,17 @@
 "use client";
 
 import allocatorABI from "@/abi/Allocator";
-import useOwnableOwner from "@/hooks/useOwnableOwner";
+import { useOwnableOwner } from "@/hooks/use-ownable-owner";
 import { formatBytes, shortenAddress } from "@/lib/utils";
 import type { Address, DecodeFunctionDataReturnType } from "viem";
 import AllocatorAllowanceWidget from "./AllocatorAllowanceWidget";
+import { AllocatorDatacapCard } from "./AllocatorDatacapCard";
 import AllocatorsWidget from "./AllocatorsWidget";
 import ContractOwnershipWidget from "./ContractOwnershipWidget";
 import SafeGuard from "./SafeGuard";
 import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
 import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
-import { AllocatorDatacapCard } from "./AllocatorDatacapCard";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -20,7 +20,10 @@ export interface AllocatorDashboardProps {
 export function AllocatorDashboard({
   allocatorContractAddress,
 }: AllocatorDashboardProps) {
-  const { data: ownerAddress } = useOwnableOwner(allocatorContractAddress);
+  const { data: ownerAddress } = useOwnableOwner({
+    contractAddress: allocatorContractAddress,
+    refetchOnEvents: true,
+  });
 
   return (
     <SafeProvider safeAddress={ownerAddress}>

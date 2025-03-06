@@ -1,4 +1,4 @@
-import * as useAllocatorsHooks from "@/hooks/useAllocators";
+import * as useAllocatorsHooks from "@/hooks/use-allocators";
 import { cleanup, getAllByRole, render } from "@testing-library/react";
 import type { Address } from "viem";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -21,7 +21,7 @@ const AllocatorsTableRowSpy = vi
     )
   );
 
-const useAllocatorsSpy = vi.spyOn(useAllocatorsHooks, "default");
+const useAllocatorsSpy = vi.spyOn(useAllocatorsHooks, "useAllocators");
 
 describe("AllocatorsWidget component", () => {
   afterEach(() => {

@@ -1,8 +1,8 @@
 "use client";
 
 import ownable2StepABI from "@/abi/Ownable2Step";
-import useOwnable2StepPendingOwner from "@/hooks/useOwnable2StepPendingOwner";
-import useOwnableOwner from "@/hooks/useOwnableOwner";
+import { useOwnable2StepPendingOwner } from "@/hooks/use-ownable-2-step-pending-owner";
+import { useOwnableOwner } from "@/hooks/use-ownable-owner";
 import { TransactionBase } from "@safe-global/types-kit";
 import { Loader2 } from "lucide-react";
 import {
@@ -44,12 +44,15 @@ export function ContractOwnershipWidget({
 }: ContractOwnershipWidgetProps) {
   const { address: accountAddress } = useAccount();
   const [tab, setTab] = useState("transfer");
-  const { data: ownerAddress, refetch: refetchOwner } =
-    useOwnableOwner(contractAddress);
+  const { data: ownerAddress, refetch: refetchOwner } = useOwnableOwner({
+    contractAddress,
+  });
   const { data: pendingOwnerAddress, refetch: refetchPendingOwner } =
-    useOwnable2StepPendingOwner(
-      ownableType === "ownable2Step" ? contractAddress : undefined
-    );
+    useOwnable2StepPendingOwner({
+      contractAddress:
+        ownableType === "ownable2Step" ? contractAddress : undefined,
+      refetchOnEvents: true,
+    });
   const [newOwnerAddress, setNewOwnerAddress] = useState("");
   const hasPendingOwner =
     typeof pendingOwnerAddress !== "undefined" &&
