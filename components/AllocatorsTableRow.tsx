@@ -1,5 +1,5 @@
 import allocatorABI from "@/abi/Allocator";
-import useAllocatorAllowance from "@/hooks/useAllocatorAllowance";
+import { useAllocatorAllowance } from "@/hooks/use-allocator-allowance";
 import { formatBytes } from "@/lib/utils";
 import type { TransactionBase } from "@safe-global/types-kit";
 import { useCallback, useMemo } from "react";

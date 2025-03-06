@@ -1,10 +1,10 @@
 "use client";
 
-import useAllocators from "@/hooks/useAllocators";
+import { useAllocators } from "@/hooks/use-allocators";
+import type { Address } from "viem";
+import AllocatorsTableRow from "./AllocatorsTableRow";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "./ui/table";
-import AllocatorsTableRow from "./AllocatorsTableRow";
-import type { Address } from "viem";
 
 export interface AllocatorsWidgetProps {
   allocatorContractAddress: Address;

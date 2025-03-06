@@ -1,5 +1,5 @@
 import allocatorABI from "@/abi/Allocator";
-import * as useAllocatorAllowanceHooks from "@/hooks/useAllocatorAllowance";
+import * as useAllocatorAllowanceHooks from "@/hooks/use-allocator-allowance";
 import { cleanup, fireEvent, getByRole, render } from "@testing-library/react";
 import { toast } from "sonner";
 import { encodeFunctionData } from "viem";
@@ -38,7 +38,7 @@ describe("AllocatorsTableRow component", () => {
       );
 
     const useAllocatorAllowanceSpy = vi
-      .spyOn(useAllocatorAllowanceHooks, "default")
+      .spyOn(useAllocatorAllowanceHooks, "useAllocatorAllowance")
       .mockImplementation(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return { data: undefined, isLoading: true } as any; // we mock as much as we need
