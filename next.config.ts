@@ -1,13 +1,13 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import type { NextConfig } from "next/types";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   output: "standalone",
   reactStrictMode: true,
 };
 
-module.exports = withSentryConfig(nextConfig, {
+export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
   authToken: process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN,
