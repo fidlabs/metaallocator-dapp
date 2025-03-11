@@ -1,7 +1,7 @@
 "use client";
 
-import { useAllocators } from "@/hooks/use-allocators";
-import type { Address } from "viem";
+import { useAllocatorsWithAllowance } from "@/hooks/use-allocators-with-allowance";
+import { isAddress, type Address } from "viem";
 import AllocatorsTableRow from "./AllocatorsTableRow";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "./ui/table";
@@ -14,10 +14,64 @@ export function AllocatorsWidget({
   allocatorContractAddress,
 }: AllocatorsWidgetProps) {
   const {
-    data: allocators,
+    data: allocatorsAllowanceMap,
     error,
     isLoading,
-  } = useAllocators(allocatorContractAddress);
+  } = useAllocatorsWithAllowance(allocatorContractAddress);
+
+  const content = (() => {
+    if (isLoading) {
+      return <p className="text-sm text-muted-foreground">Loading...</p>;
+    }
+
+    if (!!error) {
+      return (
+        <p className="text-sm text-muted-foreground">
+          Could not load allocators list.
+        </p>
+      );
+    }
+
+    const entries = allocatorsAllowanceMap
+      ? Object.entries(allocatorsAllowanceMap)
+      : [];
+
+    if (entries.length === 0) {
+      return (
+        <p className="text-sm text-center text-muted-foreground">
+          No allocators found.
+        </p>
+      );
+    }
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Address</TableHead>
+            <TableHead className="text-right">Allowance</TableHead>
+            <TableHead />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {entries.map(([allocatorAddress, allocatorAllowance]) => {
+            if (allocatorAllowance === 0n || !isAddress(allocatorAddress)) {
+              return null;
+            }
+
+            return (
+              <AllocatorsTableRow
+                key={allocatorAddress}
+                allocatorContractAddress={allocatorContractAddress}
+                allocatorAddress={allocatorAddress}
+                allocatorAllowance={allocatorAllowance}
+              />
+            );
+          })}
+        </TableBody>
+      </Table>
+    );
+  })();
 
   return (
     <Card>
@@ -25,38 +79,7 @@ export function AllocatorsWidget({
         <CardTitle>Allocators List</CardTitle>
       </CardHeader>
 
-      <CardContent>
-        {!!allocators && !error && !isLoading && (
-          <>
-            {allocators.length > 0 && (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Address</TableHead>
-                    <TableHead className="text-right">Allowance</TableHead>
-                    <TableHead />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allocators.map((allocatorAddress) => (
-                    <AllocatorsTableRow
-                      key={allocatorAddress}
-                      allocatorContractAddress={allocatorContractAddress}
-                      allocatorAddress={allocatorAddress}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-
-            {allocators.length === 0 && (
-              <p className="text-sm text-center text-muted-foreground">
-                No allocators found.
-              </p>
-            )}
-          </>
-        )}
-      </CardContent>
+      <CardContent>{content}</CardContent>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { QueryKey } from "@/constants";
+import { QueryKey } from "@/lib/constants";
 import { QueryFunction, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { Address } from "viem";
@@ -12,41 +12,44 @@ export function useAddressDatacap(address: Address) {
 
   const queryFn = useCallback<
     QueryFunction<UseAddressDatacapReturnType, UseAddressDatacapQueryKey>
-  >(async ({ queryKey }) => {
-    const [, address] = queryKey;
+  >(
+    async ({ queryKey }) => {
+      const [, address] = queryKey;
 
-    if (!client) {
-      throw new Error("Wagmi client not initialized");
-    }
+      if (!client) {
+        throw new Error("Wagmi client not initialized");
+      }
 
-    const filecoinAddress = await client.request({
-      method: "Filecoin.EthAddressToFilecoinAddress",
-      params: [address],
-    });
+      const filecoinAddress = await client.request({
+        method: "Filecoin.EthAddressToFilecoinAddress",
+        params: [address],
+      });
 
-    if (typeof filecoinAddress !== "string") {
-      throw new Error(
-        "Invalid response when converting ETH address to Filecoin address"
-      );
-    }
+      if (typeof filecoinAddress !== "string") {
+        throw new Error(
+          "Invalid response when converting ETH address to Filecoin address"
+        );
+      }
 
-    const datacap = await client.request({
-      method: "Filecoin.StateVerifierStatus",
-      params: [filecoinAddress, null],
-    });
+      const datacap = await client.request({
+        method: "Filecoin.StateVerifierStatus",
+        params: [filecoinAddress, null],
+      });
 
-    if (datacap === null) {
-      return 0n;
-    }
+      if (datacap === null) {
+        return 0n;
+      }
 
-    if (typeof datacap !== "string") {
-      throw new Error(
-        `Invalid response when getting datacap of address ${filecoinAddress}. Type ${typeof datacap} is not string.`
-      );
-    }
+      if (typeof datacap !== "string") {
+        throw new Error(
+          `Invalid response when getting datacap of address ${filecoinAddress}. Type ${typeof datacap} is not string.`
+        );
+      }
 
-    return BigInt(datacap);
-  }, []);
+      return BigInt(datacap);
+    },
+    [client]
+  );
 
   return useQuery({
     queryFn,

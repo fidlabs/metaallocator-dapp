@@ -1,7 +1,7 @@
+import { QueryKey } from "@/lib/constants";
+import { SafeClient } from "@safe-global/sdk-starter-kit";
 import { UseQueryResult } from "@tanstack/react-query";
 import useSafeClientQuery from "./useSafeClientQuery";
-import { SafeClient } from "@safe-global/sdk-starter-kit";
-import { QueryKey } from "@/constants";
 import useSafeContext from "./useSafeContext";
 
 type SafeMultisigTransactions = Awaited<

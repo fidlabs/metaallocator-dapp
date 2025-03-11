@@ -1,6 +1,5 @@
-import * as useAllocatorsHooks from "@/hooks/use-allocators";
+import * as useAllocatorsWithAllowanceHooks from "@/hooks/use-allocators-with-allowance";
 import { cleanup, getAllByRole, render } from "@testing-library/react";
-import type { Address } from "viem";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as AllocatorsTableRow from "./AllocatorsTableRow";
 import AllocatorsWidget from "./AllocatorsWidget";
@@ -11,17 +10,25 @@ const testContractAddress = "0x0";
 const AllocatorsTableRowSpy = vi
   .spyOn(AllocatorsTableRow, "default")
   .mockImplementation(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ allocatorAddress, allocatorContractAddress, ...rest }) => (
+    ({
+      allocatorAddress,
+      allocatorAllowance,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      allocatorContractAddress,
+      ...rest
+    }) => (
       <TableRow {...rest}>
         <TableCell>{allocatorAddress}</TableCell>
-        <TableCell>100GiB</TableCell>
+        <TableCell>{allocatorAllowance.toString()}</TableCell>
         <TableCell></TableCell>
       </TableRow>
     )
   );
 
-const useAllocatorsSpy = vi.spyOn(useAllocatorsHooks, "useAllocators");
+const useAllocatorsWithAllowanceSpy = vi.spyOn(
+  useAllocatorsWithAllowanceHooks,
+  "useAllocatorsWithAllowance"
+);
 
 describe("AllocatorsWidget component", () => {
   afterEach(() => {
@@ -30,12 +37,16 @@ describe("AllocatorsWidget component", () => {
   });
 
   it("displays a table with list of allocators", () => {
-    const mockAllocatorsList: Address[] = ["0x1", "0x2"];
+    const mockAllocatorsMap = {
+      "0x0000000000000000000000000000000000000001": 0n,
+      "0x0000000000000000000000000000000000000002": 100n,
+      "0x0000000000000000000000000000000000000003": 1000n,
+    } as const;
 
-    useAllocatorsSpy.mockImplementation(() => {
+    useAllocatorsWithAllowanceSpy.mockImplementation(() => {
       return {
-        data: mockAllocatorsList,
-        error: undefined,
+        data: mockAllocatorsMap,
+        error: null,
         isLoading: false,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any; // we mock as much as we need here
@@ -48,25 +59,28 @@ describe("AllocatorsWidget component", () => {
     const columnHeaders = getAllByRole(table, "columnheader");
 
     expect(columnHeaders.length).toBe(3);
-    expect(AllocatorsTableRowSpy).toHaveBeenCalledTimes(
-      mockAllocatorsList.length
+    expect(AllocatorsTableRowSpy).toHaveBeenCalledTimes(2);
+    const [, ...nonZeroAllowanceAllocators] = Object.entries(mockAllocatorsMap);
+
+    nonZeroAllowanceAllocators.forEach(
+      ([mockAllocatorAddress, mockAllocatorAllowance], index) => {
+        expect(AllocatorsTableRowSpy).toHaveBeenNthCalledWith(
+          index + 1,
+          expect.objectContaining({
+            allocatorAddress: mockAllocatorAddress,
+            allocatorAllowance: mockAllocatorAllowance,
+            allocatorContractAddress: testContractAddress,
+          }),
+          undefined
+        );
+      }
     );
-    mockAllocatorsList.forEach((mockAllocatorAddress, index) => {
-      expect(AllocatorsTableRowSpy).toHaveBeenNthCalledWith(
-        index + 1,
-        expect.objectContaining({
-          allocatorAddress: mockAllocatorAddress,
-          allocatorContractAddress: testContractAddress,
-        }),
-        undefined
-      );
-    });
   });
 
   it("displays empty state when no allocator were found", () => {
-    useAllocatorsSpy.mockImplementation(() => {
+    useAllocatorsWithAllowanceSpy.mockImplementation(() => {
       return {
-        data: [],
+        data: {},
         error: undefined,
         isLoading: false,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

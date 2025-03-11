@@ -1,4 +1,4 @@
-import { WALLETCONNECT_PROJECT_ID } from "@/constants";
+import { WALLETCONNECT_PROJECT_ID } from "@/lib/constants";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   metaMaskWallet,

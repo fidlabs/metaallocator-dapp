@@ -1,4 +1,4 @@
-import bytes from "bytes-iec";
+import { filesize } from "filesize";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { filecoin, filecoinCalibration } from "wagmi/chains";
@@ -22,7 +22,7 @@ export function getCustomSafeTxServiceUrl(chainId: number): string | undefined {
 }
 
 export function formatBytes(input: bigint | number): string {
-  return bytes.format(Number(input), { mode: "binary" }) ?? "";
+  return filesize(input, { standard: "iec" });
 }
 
 export async function poll<Result>(

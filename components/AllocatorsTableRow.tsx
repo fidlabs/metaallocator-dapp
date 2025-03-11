@@ -1,27 +1,23 @@
 import allocatorABI from "@/abi/Allocator";
-import { useAllocatorAllowance } from "@/hooks/use-allocator-allowance";
 import { formatBytes } from "@/lib/utils";
 import type { TransactionBase } from "@safe-global/types-kit";
 import { useCallback, useMemo } from "react";
+import { toast } from "sonner";
 import { encodeFunctionData, type Address } from "viem";
 import TransactionButton from "./TransactionButton";
 import { TableCell, TableRow } from "./ui/table";
-import { toast } from "sonner";
 
 export interface AllocatorsTableRowProps {
   allocatorAddress: Address;
+  allocatorAllowance: bigint;
   allocatorContractAddress: Address;
 }
 
 export function AllocatorsTableRow({
   allocatorAddress,
+  allocatorAllowance,
   allocatorContractAddress,
 }: AllocatorsTableRowProps) {
-  const { data: allowance, isLoading } = useAllocatorAllowance(
-    allocatorContractAddress,
-    allocatorAddress
-  );
-
   const resetAllowanceTransaction = useMemo<TransactionBase>(() => {
     return {
       to: allocatorContractAddress,
@@ -42,7 +38,7 @@ export function AllocatorsTableRow({
     <TableRow>
       <TableCell>{allocatorAddress}</TableCell>
       <TableCell className="text-right">
-        {isLoading ? "Loading..." : allowance ? formatBytes(allowance) : "-"}
+        {formatBytes(allocatorAllowance)}
       </TableCell>
       <TableCell className="text-right">
         <TransactionButton
