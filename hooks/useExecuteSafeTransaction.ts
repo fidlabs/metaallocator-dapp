@@ -1,4 +1,4 @@
-import { MutatationKey, QueryKey } from "@/constants";
+import { MutatationKey, QueryKey } from "@/lib/constants";
 import { isWaitableTransaction } from "@/types/common";
 import { SafeClient } from "@safe-global/sdk-starter-kit";
 import useInvalidateQueries from "./useInvalidateQueries";

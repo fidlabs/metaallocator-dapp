@@ -1,4 +1,4 @@
-import { TESTNET_ENABLED } from "@/constants";
+import { TESTNET_ENABLED } from "@/lib/constants";
 import { type Address, isAddress } from "viem";
 import { filecoin, filecoinCalibration } from "viem/chains";
 

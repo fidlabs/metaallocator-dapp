@@ -1,4 +1,4 @@
-import { QueryKey } from "@/constants";
+import { QueryKey } from "@/lib/constants";
 import { UseQueryResult } from "@tanstack/react-query";
 import { Address } from "viem";
 import useSafeClientQuery from "./useSafeClientQuery";

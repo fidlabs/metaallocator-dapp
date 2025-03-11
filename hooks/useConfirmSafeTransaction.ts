@@ -1,4 +1,4 @@
-import { MutatationKey, QueryKey } from "@/constants";
+import { MutatationKey, QueryKey } from "@/lib/constants";
 import useInvalidateQueries from "./useInvalidateQueries";
 import useSafeClientMutation, {
   UseSafeClientMutationOptions,

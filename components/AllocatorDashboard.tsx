@@ -5,13 +5,13 @@ import { useOwnableOwner } from "@/hooks/use-ownable-owner";
 import { formatBytes, shortenAddress } from "@/lib/utils";
 import type { Address, DecodeFunctionDataReturnType } from "viem";
 import AllocatorAllowanceWidget from "./AllocatorAllowanceWidget";
-import { AllocatorDatacapCard } from "./AllocatorDatacapCard";
 import AllocatorsWidget from "./AllocatorsWidget";
 import ContractOwnershipWidget from "./ContractOwnershipWidget";
 import SafeGuard from "./SafeGuard";
 import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
 import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
+import { MetaallocatorDatacapGrid } from "./metaallocator-datacap-grid";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -50,8 +50,8 @@ export function AllocatorDashboard({
             {allocatorContractAddress}
           </p>
         </div>
-        <AllocatorDatacapCard
-          allocatorContractAddress={allocatorContractAddress}
+        <MetaallocatorDatacapGrid
+          metaallocatorContractAddress={allocatorContractAddress}
         />
         <AllocatorsWidget allocatorContractAddress={allocatorContractAddress} />
         <AllocatorAllowanceWidget

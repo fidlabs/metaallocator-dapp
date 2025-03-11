@@ -1,5 +1,4 @@
 import allocatorABI from "@/abi/Allocator";
-import * as useAllocatorAllowanceHooks from "@/hooks/use-allocator-allowance";
 import { cleanup, fireEvent, getByRole, render } from "@testing-library/react";
 import { toast } from "sonner";
 import { encodeFunctionData } from "viem";
@@ -37,19 +36,13 @@ describe("AllocatorsTableRow component", () => {
         }
       );
 
-    const useAllocatorAllowanceSpy = vi
-      .spyOn(useAllocatorAllowanceHooks, "useAllocatorAllowance")
-      .mockImplementation(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return { data: undefined, isLoading: true } as any; // we mock as much as we need
-      });
-
-    const { getAllByRole, rerender } = render(
+    const { getAllByRole } = render(
       <table>
         <tbody>
           <AllocatorsTableRow
             allocatorContractAddress={testContractAddress}
             allocatorAddress={testAllocatorAddress}
+            allocatorAllowance={107_374_182_400n}
           />
         </tbody>
       </table>
@@ -61,25 +54,7 @@ describe("AllocatorsTableRow component", () => {
     const [addressCell, allowanceCell, actionsCell] = cells;
 
     expect(addressCell).toHaveTextContent(testAllocatorAddress);
-    expect(allowanceCell).toHaveTextContent("Loading...");
-
-    useAllocatorAllowanceSpy.mockImplementation(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return { data: 107_374_182_400n, isLoading: false } as any;
-    });
-
-    rerender(
-      <table>
-        <tbody>
-          <AllocatorsTableRow
-            allocatorContractAddress={testContractAddress}
-            allocatorAddress={testAllocatorAddress}
-          />
-        </tbody>
-      </table>
-    );
-
-    expect(allowanceCell).toHaveTextContent("100GiB");
+    expect(allowanceCell).toHaveTextContent("100 GiB");
     expect(TransactionButtonSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         transaction: {
