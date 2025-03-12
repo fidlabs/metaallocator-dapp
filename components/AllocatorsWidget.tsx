@@ -48,7 +48,8 @@ export function AllocatorsWidget({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Address</TableHead>
+            <TableHead>Ethereum Address</TableHead>
+            <TableHead>Filecoin Address</TableHead>
             <TableHead className="text-right">Allowance</TableHead>
             <TableHead />
           </TableRow>

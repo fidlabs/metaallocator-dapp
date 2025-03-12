@@ -19,6 +19,7 @@ const AllocatorsTableRowSpy = vi
     }) => (
       <TableRow {...rest}>
         <TableCell>{allocatorAddress}</TableCell>
+        <TableCell>f0123</TableCell>
         <TableCell>{allocatorAllowance.toString()}</TableCell>
         <TableCell></TableCell>
       </TableRow>
@@ -58,7 +59,7 @@ describe("AllocatorsWidget component", () => {
     const table = getByRole("table");
     const columnHeaders = getAllByRole(table, "columnheader");
 
-    expect(columnHeaders.length).toBe(3);
+    expect(columnHeaders.length).toBe(4);
     expect(AllocatorsTableRowSpy).toHaveBeenCalledTimes(2);
     const [, ...nonZeroAllowanceAllocators] = Object.entries(mockAllocatorsMap);
 
