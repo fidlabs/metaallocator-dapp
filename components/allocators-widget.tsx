@@ -17,7 +17,9 @@ export function AllocatorsWidget({
     data: allocatorsAllowanceMap,
     error,
     isLoading,
-  } = useAllocatorsWithAllowance(allocatorContractAddress);
+  } = useAllocatorsWithAllowance({
+    metaallocatorContractAddress: allocatorContractAddress,
+  });
 
   const content = (() => {
     if (isLoading) {

@@ -1,6 +1,7 @@
 import allocatorABI from "@/abi/Allocator";
-import { useSendSafeContextTransaction } from "@/hooks/use-send-safe-context-transaction";
 import { useFilecoinPublicClient } from "@/hooks/use-filecoin-public-client";
+import { useMetallocatorDatacapBreakdown } from "@/hooks/use-metaallocator-datacap-breakdown";
+import { useSendSafeContextTransaction } from "@/hooks/use-send-safe-context-transaction";
 import { isFilecoinAddress } from "@/types/common";
 import {
   Form,
@@ -11,10 +12,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TransactionBase } from "@safe-global/types-kit";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type Address, encodeFunctionData, Hex, isAddress } from "viem";
 import { z } from "zod";
+import { AllocationWarningAlert } from "./allocation-warning-alert";
 import BinaryBytesField from "./BinaryBytesField";
 import { SafeOwnerButton } from "./safe-owner-button";
 import {
@@ -59,6 +61,9 @@ const formSchema = z.object({
 export function AllocatorAllowanceWidget({
   allocatorContractAddress,
 }: AllocatorAllowanceWidgetProps) {
+  const { data: datacapBreakdown, isLoading: datacapBreakdownLoading } =
+    useMetallocatorDatacapBreakdown(allocatorContractAddress);
+
   const client = useFilecoinPublicClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -162,12 +167,35 @@ export function AllocatorAllowanceWidget({
                 </FormItem>
               )}
             />
+
+            <Controller
+              control={form.control}
+              name="allowance"
+              render={({ field }) => {
+                const allowanceToBeAdded =
+                  field.value !== "" ? BigInt(field.value) : 0n;
+                const showWarning =
+                  allowanceToBeAdded > 0 &&
+                  !!datacapBreakdown &&
+                  datacapBreakdown.unallocatedDatacap - allowanceToBeAdded < 0n;
+
+                if (!showWarning) {
+                  return <></>;
+                }
+
+                return <AllocationWarningAlert />;
+              }}
+            />
           </CardContent>
 
           <CardFooter className="justify-end">
             <SafeOwnerButton
               disabled={form.formState.isSubmitted && !form.formState.isValid}
-              loading={form.formState.isSubmitting || transactionInProgress}
+              loading={
+                datacapBreakdownLoading ||
+                form.formState.isSubmitting ||
+                transactionInProgress
+              }
               type="submit"
             >
               Add Allowance

@@ -2,7 +2,7 @@ import * as useAllocatorsWithAllowanceHooks from "@/hooks/use-allocators-with-al
 import { cleanup, getAllByRole, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as AllocatorsTableRow from "./AllocatorsTableRow";
-import AllocatorsWidget from "./AllocatorsWidget";
+import AllocatorsWidget from "./allocators-widget";
 import { TableCell, TableRow } from "./ui/table";
 
 const testContractAddress = "0x0";

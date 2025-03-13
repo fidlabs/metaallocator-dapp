@@ -3,6 +3,7 @@ import { QueryKey } from "@/lib/constants";
 import {
   useQuery,
   useQueryClient,
+  UseQueryOptions,
   type QueryFunction,
 } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -27,10 +28,27 @@ type UseAllocatorsWithAllowanceQueryKey = [
   QueryKey.ALLOCATORS_WITH_ALLOWANCE,
   metallocatorContractAddress: Address,
 ];
+type UseAllocatorsWithAllowanceQueryOptions<TData = AllocatorsAllowanceMap> =
+  Omit<
+    UseQueryOptions<
+      AllocatorsAllowanceMap,
+      Error,
+      TData,
+      UseAllocatorsWithAllowanceQueryKey
+    >,
+    "queryFn" | "queryKey"
+  >;
+export interface UseAllocatorsWithAllowanceParameters<
+  TData = AllocatorsAllowanceMap,
+> {
+  metaallocatorContractAddress: Address;
+  queryOptions?: UseAllocatorsWithAllowanceQueryOptions<TData>;
+}
 
-export function useAllocatorsWithAllowance(
-  metallocatorContractAddress: Address
-) {
+export function useAllocatorsWithAllowance<TData>({
+  metaallocatorContractAddress,
+  queryOptions,
+}: UseAllocatorsWithAllowanceParameters<TData>) {
   const chainId = useChainId();
   const config = useConfig();
   const queryClient = useQueryClient();
@@ -39,7 +57,7 @@ export function useAllocatorsWithAllowance(
     (logs) => {
       const queryKey: UseAllocatorsWithAllowanceQueryKey = [
         QueryKey.ALLOCATORS_WITH_ALLOWANCE,
-        metallocatorContractAddress,
+        metaallocatorContractAddress,
       ];
 
       queryClient.setQueryData<AllocatorsAllowanceMap>(
@@ -61,14 +79,14 @@ export function useAllocatorsWithAllowance(
         }
       );
     },
-    [metallocatorContractAddress, queryClient]
+    [metaallocatorContractAddress, queryClient]
   );
 
   const handleDatacapAllocatedEvents = useCallback<DatacapAllocatedLogsFn>(
     (logs) => {
       const queryKey: UseAllocatorsWithAllowanceQueryKey = [
         QueryKey.ALLOCATORS_WITH_ALLOWANCE,
-        metallocatorContractAddress,
+        metaallocatorContractAddress,
       ];
 
       queryClient.setQueryData<AllocatorsAllowanceMap>(
@@ -92,17 +110,17 @@ export function useAllocatorsWithAllowance(
         }
       );
     },
-    [metallocatorContractAddress, queryClient]
+    [metaallocatorContractAddress, queryClient]
   );
 
   const queryFn = useCallback<
     QueryFunction<AllocatorsAllowanceMap, UseAllocatorsWithAllowanceQueryKey>
   >(
     async ({ queryKey }) => {
-      const [, metallocatorContractAddress] = queryKey;
+      const [, metaallocatorContractAddress] = queryKey;
 
       const allocatorsAddresses = await readContract(config, {
-        address: metallocatorContractAddress,
+        address: metaallocatorContractAddress,
         abi: allocatorABI,
         chainId,
         functionName: "getAllocators",
@@ -112,7 +130,7 @@ export function useAllocatorsWithAllowance(
         ContractFunctionParameters<typeof allocatorABI, "view", "allowance">
       >((allocatorAddress) => {
         return {
-          address: metallocatorContractAddress,
+          address: metaallocatorContractAddress,
           abi: allocatorABI,
           chainId,
           functionName: "allowance",
@@ -146,20 +164,24 @@ export function useAllocatorsWithAllowance(
 
   useWatchContractEvent({
     abi: allocatorABI,
-    address: metallocatorContractAddress,
+    address: metaallocatorContractAddress,
     eventName: "AllowanceChanged",
     onLogs: handleAllowanceChangedEvents,
   });
 
   useWatchContractEvent({
     abi: allocatorABI,
-    address: metallocatorContractAddress,
+    address: metaallocatorContractAddress,
     eventName: "DatacapAllocated",
     onLogs: handleDatacapAllocatedEvents,
   });
 
   return useQuery({
+    ...queryOptions,
     queryFn,
-    queryKey: [QueryKey.ALLOCATORS_WITH_ALLOWANCE, metallocatorContractAddress],
+    queryKey: [
+      QueryKey.ALLOCATORS_WITH_ALLOWANCE,
+      metaallocatorContractAddress,
+    ],
   });
 }

@@ -3,12 +3,20 @@ import * as SafeOwnerButton from "@/components/safe-owner-button";
 import * as useFilecoinPublicClientHooks from "@/hooks/use-filecoin-public-client";
 import * as useSendSafeContextTransactionHooks from "@/hooks/use-send-safe-context-transaction";
 import { renderWithSafeContext } from "@/lib/test-utils";
-import { cleanup, fireEvent, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  getByRole as getByRoleInContainer,
+  waitFor,
+} from "@testing-library/react";
 import { toast } from "sonner";
 import { encodeFunctionData, type Address } from "viem";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import AllocatorAllowanceWidget from "./AllocatorAllowanceWidget";
+import AllocatorAllowanceWidget from "./allocator-allowance-widget";
 import LoaderButton from "./LoaderButton";
+import * as useMetaallocatorDatacapBreakdownHooks from "@/hooks/use-metaallocator-datacap-breakdown";
+
+const value100GiB = 107_374_182_400n;
 
 const allocatorContractAddress: Address = "0x1";
 const testAllocatorFilecoinAddress =
@@ -37,6 +45,21 @@ const useFilecoinPublicClientSpy = vi
     } as any; // mocking only what we need;
   });
 
+vi.spyOn(
+  useMetaallocatorDatacapBreakdownHooks,
+  "useMetallocatorDatacapBreakdown"
+).mockImplementation(() => {
+  return {
+    data: {
+      contractDatacap: value100GiB,
+      allocatedDatacap: 0n,
+      unallocatedDatacap: value100GiB,
+    },
+    error: null,
+    isLoading: false,
+  };
+});
+
 describe("AllocatorAllowanceWidget component", () => {
   afterEach(() => {
     cleanup();
@@ -44,7 +67,7 @@ describe("AllocatorAllowanceWidget component", () => {
   });
 
   it("renders a form to change allocators allowance", async () => {
-    const testAllowanceAmount = 107_374_182_400n; // 100 GiB
+    const testAllowanceAmount = value100GiB;
 
     const mockSendTransaction = vi.fn();
     const mockRequest = vi.fn();
@@ -172,5 +195,43 @@ describe("AllocatorAllowanceWidget component", () => {
       });
     });
     expect(button).toBeDisabled();
+  });
+
+  it("renders a warning when allowance to be added exceeds unallocated datacap", async () => {
+    const { getByRole, getAllByRole, queryByRole } = renderWithSafeContext(
+      <AllocatorAllowanceWidget
+        allocatorContractAddress={allocatorContractAddress}
+      />,
+      {
+        deployed: true,
+        initialized: true,
+        connected: true,
+      }
+    );
+
+    const inputs = getAllByRole("textbox") as HTMLInputElement[];
+    const [, allowanceInput] = inputs;
+
+    // Enter unallocated datacap as amount of allowance to be added
+    await waitFor(() => {
+      fireEvent.change(allowanceInput, {
+        target: { value: "100" },
+      });
+    });
+
+    // No alert when amount to be added does not exceed unallocated datacap
+    expect(queryByRole("alert")).toBeNull();
+
+    // Increase amount to exceed unallocated datacap
+    await waitFor(() => {
+      fireEvent.change(allowanceInput, {
+        target: { value: "200" },
+      });
+    });
+
+    // Expect warning alert to render
+    const alert = getByRole("alert");
+    const alertHeading = getByRoleInContainer(alert, "heading");
+    expect(alertHeading).toHaveTextContent("Warning!");
   });
 });
