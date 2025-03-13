@@ -1,4 +1,4 @@
-import AllocatorDashboard from "@/components/AllocatorDashboard";
+import AllocatorDashboard from "@/components/allocator-dashboard";
 import ChainWatcher from "@/components/ChainWatcher";
 import { redirect, RedirectType } from "next/navigation";
 import { isAddress } from "viem";

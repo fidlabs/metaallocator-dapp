@@ -1,5 +1,4 @@
-import { useAllocatorsWithAllowance } from "@/hooks/use-allocators-with-allowance";
-import { useAddressDatacap } from "@/hooks/useAddressDatacap";
+import { useMetallocatorDatacapBreakdown } from "@/hooks/use-metaallocator-datacap-breakdown";
 import { cn, formatBytes } from "@/lib/utils";
 import {
   Card,
@@ -70,28 +69,10 @@ export function MetaallocatorDatacapGrid({
   metaallocatorContractAddress,
 }: MetaallocatorDatacapGridProps) {
   const {
-    data: contractDatacap,
-    error: contractDatacapError,
-    isLoading: contractDatacapLoading,
-  } = useAddressDatacap(metaallocatorContractAddress);
-  const {
-    data: allocatorsAllowanceMap,
-    error: allocatorsAllowanceError,
-    isLoading: allocatorsAllowanceLoading,
-  } = useAllocatorsWithAllowance(metaallocatorContractAddress);
-
-  const allocatedDatacap = allocatorsAllowanceMap
-    ? Object.values(allocatorsAllowanceMap).reduce(
-        (total, allocatorAllowance) => total + allocatorAllowance,
-        0n
-      )
-    : undefined;
-
-  const unallocatedDatacap =
-    typeof contractDatacap !== "undefined" &&
-    typeof allocatedDatacap !== "undefined"
-      ? contractDatacap - allocatedDatacap
-      : undefined;
+    data: datacapBreakdown,
+    error: datacapBreakdownError,
+    isLoading: datacapBreakdownLoading,
+  } = useMetallocatorDatacapBreakdown(metaallocatorContractAddress);
 
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -104,9 +85,9 @@ export function MetaallocatorDatacapGrid({
         </CardHeader>
         <CardContent>
           <ValueDisplay
-            isLoading={contractDatacapLoading}
-            error={contractDatacapError}
-            value={contractDatacap}
+            isLoading={datacapBreakdownLoading}
+            error={datacapBreakdownError}
+            value={datacapBreakdown?.contractDatacap}
           />
         </CardContent>
       </Card>
@@ -120,9 +101,9 @@ export function MetaallocatorDatacapGrid({
         </CardHeader>
         <CardContent>
           <ValueDisplay
-            isLoading={allocatorsAllowanceLoading}
-            error={allocatorsAllowanceError}
-            value={allocatedDatacap}
+            isLoading={datacapBreakdownLoading}
+            error={datacapBreakdownError}
+            value={datacapBreakdown?.allocatedDatacap}
           />
         </CardContent>
       </Card>
@@ -137,9 +118,9 @@ export function MetaallocatorDatacapGrid({
         <CardContent>
           <ValueDisplay
             colors
-            isLoading={contractDatacapLoading || allocatorsAllowanceLoading}
-            error={contractDatacapError || allocatorsAllowanceError}
-            value={unallocatedDatacap}
+            isLoading={datacapBreakdownLoading}
+            error={datacapBreakdownError}
+            value={datacapBreakdown?.unallocatedDatacap}
           />
         </CardContent>
       </Card>

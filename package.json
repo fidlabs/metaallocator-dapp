@@ -12,7 +12,7 @@
     "prettier": "npx prettier --check ."
   },
   "dependencies": {
-    "@fidlabs/common-react-ui": "^1.7.1",
+    "@fidlabs/common-react-ui": "^1.8.0",
     "@hookform/resolvers": "^4.1.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
