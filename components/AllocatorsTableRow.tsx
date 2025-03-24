@@ -33,7 +33,10 @@ export function AllocatorsTableRow({
     data: filecoinAddress,
     error: filecoinAddressError,
     isLoading: filecoinAddressLoading,
-  } = useFilecoinAddress(allocatorAddress);
+  } = useFilecoinAddress({
+    ethAddress: allocatorAddress,
+    robust: true,
+  });
 
   const resetAllowanceTransaction = useMemo<TransactionBase>(() => {
     return {

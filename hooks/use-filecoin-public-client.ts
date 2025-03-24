@@ -25,6 +25,11 @@ type FilecoinRPCSchema = [
     Parameters: [filecoinAddress: FilecoinAddress, null];
     ReturnType: string | null;
   },
+  {
+    Method: "Filecoin.StateLookupRobustAddress";
+    Parameters: [filecoinAddress: FilecoinAddress, null];
+    ReturnType: FilecoinAddress | null;
+  },
 ];
 
 export type FilecoinClient = Omit<Client, "request"> & {
