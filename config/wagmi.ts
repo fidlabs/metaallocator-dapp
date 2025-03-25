@@ -4,7 +4,7 @@ import {
   metaMaskWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { extractChain } from "viem";
+import { extractChain, type HttpTransportConfig } from "viem";
 import { createConfig, http } from "wagmi";
 import { Chain, filecoin, filecoinCalibration } from "wagmi/chains";
 import contractsConfigMap from "./contracts";
@@ -29,6 +29,10 @@ const connectors = connectorsForWallets(
   appInfo
 );
 
+const commonTransportConfig: HttpTransportConfig = {
+  timeout: 60000,
+};
+
 const chains = Array.from(contractsConfigMap.keys())
   .filter((chainId) => contractsConfigMap.get(chainId) != null)
   .map((chainId) => {
@@ -47,8 +51,8 @@ export const wagmiConfig = isNotEmptyChainsList(chains)
       connectors,
       chains,
       transports: {
-        [filecoin.id]: http(),
-        [filecoinCalibration.id]: http(),
+        [filecoin.id]: http(undefined, commonTransportConfig),
+        [filecoinCalibration.id]: http(undefined, commonTransportConfig),
       },
       ssr: true,
     })

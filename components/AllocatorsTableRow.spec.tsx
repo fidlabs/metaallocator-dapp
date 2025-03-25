@@ -71,7 +71,10 @@ describe("AllocatorsTableRow component", () => {
       </table>
     );
 
-    expect(useFilecoinAddressSpy).toHaveBeenCalledWith(testAllocatorAddress);
+    expect(useFilecoinAddressSpy).toHaveBeenCalledWith({
+      ethAddress: testAllocatorAddress,
+      robust: true,
+    });
 
     const cells = getAllByRole("cell");
     expect(cells.length).toBe(4);
