@@ -1,4 +1,7 @@
 import { isAddress, type Address } from "viem";
+import packageMetadata from "../package.json";
+
+export const APP_VERSION = packageMetadata.version;
 
 export enum QueryKey {
   ADDRESS_DATACAP = "address_datacap",
