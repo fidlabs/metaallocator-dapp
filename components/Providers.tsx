@@ -1,13 +1,21 @@
 "use client";
 
 import { wagmiConfig } from "@/config/wagmi";
+import { APP_VERSION } from "@/lib/constants";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import type { ReactNode } from "react";
-import { WagmiProvider } from "wagmi";
+import { deserialize, serialize, WagmiProvider } from "wagmi";
 import { RainbowKitDisclaimer } from "./RainbowKitDisclaimer";
 
 const client = new QueryClient();
+const persister = createSyncStoragePersister({
+  storage: typeof window !== "undefined" ? window.localStorage : undefined,
+  serialize,
+  deserialize,
+});
 
 interface Props {
   children: ReactNode;
@@ -20,7 +28,10 @@ export function Providers({ children }: Props) {
 
   return (
     <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={client}>
+      <PersistQueryClientProvider
+        client={client}
+        persistOptions={{ persister, buster: APP_VERSION }}
+      >
         <RainbowKitProvider
           modalSize="compact"
           appInfo={{
@@ -29,7 +40,7 @@ export function Providers({ children }: Props) {
         >
           {children}
         </RainbowKitProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </WagmiProvider>
   );
 }
