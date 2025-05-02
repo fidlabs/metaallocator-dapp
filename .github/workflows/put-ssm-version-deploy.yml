@@ -20,12 +20,12 @@ on:
 jobs:
   trigger-deploy:
     runs-on: ubuntu-latest
-    environment: '${{ inputs.secrets-environment }}'
+    environment: "${{ inputs.secrets-environment }}"
     env:
       ECR_REPOSITORY: ${{ inputs.ecr-repository }}
-      SSM_PARAMETER_NAME: '/${{ inputs.environment }}/${{ inputs.ecr-repository }}/version'
-      IMAGE_VERSION: '${{ inputs.version }}-${{ inputs.secrets-environment }}'
-      ENVIRONMENT: '${{ inputs.environment }}'
+      SSM_PARAMETER_NAME: "/${{ inputs.environment }}/${{ inputs.ecr-repository }}/version"
+      IMAGE_VERSION: "${{ inputs.version }}-${{ inputs.secrets-environment }}"
+      ENVIRONMENT: "${{ inputs.environment }}"
 
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -46,7 +46,7 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          mask-password: 'true'
+          mask-password: "true"
           registry-type: public
 
       - name: Change ${{ env.ECR_REPOSITORY }} version to ${{ env.IMAGE_VERSION }} on ${{ inputs.environment }} in SSM parameter store
