@@ -13,6 +13,20 @@ on:
         description: "Enter the version number"
         required: true
         default: "latest"
+      deploy:
+        description: "Deploy the new version?"
+        required: false
+        type: boolean
+        default: false
+      environment:
+        required: false
+        description: "Select the environment to deploy to"
+        type: choice
+        options:
+          - staging
+          # TODO: uncomment this when we want to deploy to production
+          # - production
+        default: staging
 
 permissions:
   contents: write
@@ -116,3 +130,42 @@ jobs:
           TAG_NAME="v${{ inputs.version }}"
           git tag $TAG_NAME
           git push origin $TAG_NAME
+
+  trigger-staging-deploy:
+    needs:
+      - code-check
+      - bump-version
+      - git-tag
+      - staging-publish
+    uses: ./.github/workflows/put-ssm-version-deploy.yml
+    if: |
+      ${{ inputs.version != '' && inputs.deploy == true && inputs.environment == 'staging' }} &&
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    with:
+      version: ${{ inputs.version }}
+      environment: staging
+      secrets-environment: production-fidl
+      ecr-repository: metaallocator-dapp
+    secrets: inherit
+
+  # TODO: uncomment this when we want to deploy to production
+  # trigger-production-deploy:
+  #   needs:
+  #     - code-check
+  #     - bump-version
+  #     - git-tag
+  #     - production-publish
+  #   uses: ./.github/workflows/trigger-auto-deploy.yml
+  #   if: |
+  #     ${{ inputs.version != '' && inputs.deploy == true && inputs.environment == 'production' }} &&
+  #     always() &&
+  #     !contains(needs.*.result, 'failure') &&
+  #     !contains(needs.*.result, 'cancelled')
+  #   with:
+  #     version: ${{ inputs.version }}
+  #     environment: ${{ inputs.environment }}
+  #     secrets-environment: production-fidl
+  #     ecr-repository: metaallocator-dapp
+  #   secrets: inherit
