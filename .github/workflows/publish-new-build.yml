@@ -13,6 +13,11 @@ on:
         description: "Enter the version number"
         required: true
         default: "latest"
+      deploy-to-production:
+        description: "Deploy the new version on production?"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -116,3 +121,22 @@ jobs:
           TAG_NAME="v${{ inputs.version }}"
           git tag $TAG_NAME
           git push origin $TAG_NAME
+
+  trigger-production-deploy:
+    runs-on: ubuntu-latest
+    environment: production-fidl
+    needs:
+      - code-check
+      - bump-version
+      - production-publish
+    if: ${{  github.ref_name == 'main' && inputs.version != '' && inputs.deploy-to-production == true }}
+    steps:
+      - name: Trigger production deploy
+        uses: neti-filplus-infra/filplus-deploy-action@main
+        with:
+          version: ${{ inputs.version }}
+          environment: production
+          ecr-repository: metaallocator-dapp
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_IMAGE_DEPLOYER }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_IMAGE_DEPLOYER }}
+          aws-region: us-east-1
