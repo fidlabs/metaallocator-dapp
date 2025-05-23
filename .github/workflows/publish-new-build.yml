@@ -13,20 +13,11 @@ on:
         description: "Enter the version number"
         required: true
         default: "latest"
-      deploy:
-        description: "Deploy the new version?"
+      deploy-to-production:
+        description: "Deploy the new version on production?"
         required: false
         type: boolean
         default: false
-      environment:
-        required: false
-        description: "Select the environment to deploy to"
-        type: choice
-        options:
-          - staging
-          # TODO: uncomment this when we want to deploy to production
-          # - production
-        default: staging
 
 permissions:
   contents: write
