@@ -131,41 +131,21 @@ jobs:
           git tag $TAG_NAME
           git push origin $TAG_NAME
 
-  trigger-staging-deploy:
+  trigger-production-deploy:
+    runs-on: ubuntu-latest
+    environment: production-fidl
     needs:
       - code-check
       - bump-version
-      - git-tag
-      - staging-publish
-    uses: ./.github/workflows/put-ssm-version-deploy.yml
-    if: |
-      ${{ inputs.version != '' && inputs.deploy == true && inputs.environment == 'staging' }} &&
-      always() &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
-    with:
-      version: ${{ inputs.version }}
-      environment: staging
-      secrets-environment: production-fidl
-      ecr-repository: metaallocator-dapp
-    secrets: inherit
-
-  # TODO: uncomment this when we want to deploy to production
-  # trigger-production-deploy:
-  #   needs:
-  #     - code-check
-  #     - bump-version
-  #     - git-tag
-  #     - production-publish
-  #   uses: ./.github/workflows/trigger-auto-deploy.yml
-  #   if: |
-  #     ${{ inputs.version != '' && inputs.deploy == true && inputs.environment == 'production' }} &&
-  #     always() &&
-  #     !contains(needs.*.result, 'failure') &&
-  #     !contains(needs.*.result, 'cancelled')
-  #   with:
-  #     version: ${{ inputs.version }}
-  #     environment: ${{ inputs.environment }}
-  #     secrets-environment: production-fidl
-  #     ecr-repository: metaallocator-dapp
-  #   secrets: inherit
+      - production-publish
+    if: ${{  github.ref_name == 'main' && inputs.version != '' && inputs.deploy-to-production == true }}
+    steps:
+      - name: Trigger production deploy
+        uses: neti-filplus-infra/filplus-deploy-action@main
+        with:
+          version: ${{ inputs.version }}
+          environment: production
+          ecr-repository: metaallocator-dapp
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_IMAGE_DEPLOYER }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_IMAGE_DEPLOYER }}
+          aws-region: us-east-1
