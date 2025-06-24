@@ -87,6 +87,10 @@ function formatTransactionTitle(
       return `Increase ${functionData.args[0]} allowance by ${formatBytes(
         functionData.args[1]
       )}`;
+    case "decreaseAllowance":
+      return `Decrease ${functionData.args[0]} allowance by ${formatBytes(
+        functionData.args[1]
+      )}`;
     case "setAllowance":
       return `Set ${functionData.args[0]} allowance to ${formatBytes(
         functionData.args[1]
