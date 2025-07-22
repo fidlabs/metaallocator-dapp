@@ -70,7 +70,7 @@ export function UUPSUpgradeableUpgradeWidget({
       toast.success(
         txHash
           ? "Contract upgraded"
-          : "Contract waiting scheduled for Safe confirmation"
+          : "Contract upgrade awaiting Safe confirmation"
       );
 
       resetForm();
