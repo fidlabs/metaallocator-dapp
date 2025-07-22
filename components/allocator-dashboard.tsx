@@ -95,6 +95,8 @@ function formatTransactionTitle(
       return `Set ${functionData.args[0]} allowance to ${formatBytes(
         functionData.args[1]
       )}`;
+    case "upgradeToAndCall":
+      return `Upgrade implementation to ${functionData.args[0]}`;
     default:
       return null;
   }
