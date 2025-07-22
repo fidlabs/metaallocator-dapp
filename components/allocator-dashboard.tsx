@@ -12,6 +12,7 @@ import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
 import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
 import { MetaallocatorDatacapGrid } from "./metaallocator-datacap-grid";
+import { UUPSUpgradeableUpgradeWidget } from "./uups-upgradeable-upgrade-widget";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -60,6 +61,9 @@ export function AllocatorDashboard({
         <ContractOwnershipWidget
           contractAddress={allocatorContractAddress}
           ownableType="ownable2Step"
+        />
+        <UUPSUpgradeableUpgradeWidget
+          contractAddress={allocatorContractAddress}
         />
         <SafeGuard>
           <SafePendingTransactionsList

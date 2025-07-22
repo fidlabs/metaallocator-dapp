@@ -1,25 +1,16 @@
+import { type Abi } from "viem";
 import ownable2StepABI from "./Ownable2Step";
+import UUPSUpgradeableABI from "./UUPSUpgradeable";
 
 export const allocatorABI = [
   ...ownable2StepABI,
+  ...UUPSUpgradeableABI,
   {
     type: "constructor",
     inputs: [],
     stateMutability: "nonpayable",
   },
-  {
-    type: "function",
-    name: "UPGRADE_INTERFACE_VERSION",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    stateMutability: "view",
-  },
+
   {
     type: "function",
     name: "addAllowance",
@@ -101,19 +92,7 @@ export const allocatorABI = [
     outputs: [],
     stateMutability: "nonpayable",
   },
-  {
-    type: "function",
-    name: "proxiableUUID",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-    ],
-    stateMutability: "view",
-  },
+
   {
     type: "function",
     name: "setAllowance",
@@ -132,24 +111,7 @@ export const allocatorABI = [
     outputs: [],
     stateMutability: "nonpayable",
   },
-  {
-    type: "function",
-    name: "upgradeToAndCall",
-    inputs: [
-      {
-        name: "newImplementation",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "data",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "payable",
-  },
+
   {
     type: "event",
     name: "AllowanceChanged",
@@ -214,19 +176,6 @@ export const allocatorABI = [
     anonymous: false,
   },
   {
-    type: "event",
-    name: "Upgraded",
-    inputs: [
-      {
-        name: "implementation",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-    ],
-    anonymous: false,
-  },
-  {
     type: "error",
     name: "ActorError",
     inputs: [
@@ -268,22 +217,7 @@ export const allocatorABI = [
     name: "AmountEqualZero",
     inputs: [],
   },
-  {
-    type: "error",
-    name: "ERC1967InvalidImplementation",
-    inputs: [
-      {
-        name: "implementation",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-  },
-  {
-    type: "error",
-    name: "ERC1967NonPayable",
-    inputs: [],
-  },
+
   {
     type: "error",
     name: "FailToCallActor",
@@ -351,22 +285,6 @@ export const allocatorABI = [
     name: "NotInitializing",
     inputs: [],
   },
-  {
-    type: "error",
-    name: "UUPSUnauthorizedCallContext",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "UUPSUnsupportedProxiableUUID",
-    inputs: [
-      {
-        name: "slot",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-    ],
-  },
-] as const;
+] as const satisfies Abi;
 
 export default allocatorABI;
