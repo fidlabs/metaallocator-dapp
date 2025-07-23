@@ -12,6 +12,7 @@ import SafePendingTransactionsList from "./SafePendingTransactionsList";
 import SafeProvider from "./SafeProvider";
 import ScreenBreadcrumbs from "./ScreenBreadcrumbs";
 import { MetaallocatorDatacapGrid } from "./metaallocator-datacap-grid";
+import { UUPSUpgradeableUpgradeWidget } from "./uups-upgradeable-upgrade-widget";
 
 export interface AllocatorDashboardProps {
   allocatorContractAddress: Address;
@@ -61,6 +62,9 @@ export function AllocatorDashboard({
           contractAddress={allocatorContractAddress}
           ownableType="ownable2Step"
         />
+        <UUPSUpgradeableUpgradeWidget
+          contractAddress={allocatorContractAddress}
+        />
         <SafeGuard>
           <SafePendingTransactionsList
             targetFilter={{
@@ -91,6 +95,8 @@ function formatTransactionTitle(
       return `Set ${functionData.args[0]} allowance to ${formatBytes(
         functionData.args[1]
       )}`;
+    case "upgradeToAndCall":
+      return `Upgrade implementation to ${functionData.args[0]}`;
     default:
       return null;
   }
