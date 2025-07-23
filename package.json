@@ -28,6 +28,7 @@
     "@tanstack/query-sync-storage-persister": "^5.71.5",
     "@tanstack/react-query": "^5.55.3",
     "@tanstack/react-query-persist-client": "^5.71.5",
+    "@testing-library/user-event": "^14.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
