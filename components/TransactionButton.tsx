@@ -1,9 +1,9 @@
+import useSafeContext from "@/hooks/useSafeContext";
 import { cn } from "@/lib/utils";
 import { TransactionBase } from "@safe-global/types-kit";
 import FallbackConnectWalletButton from "./FallbackConnectWalletButton";
 import LoaderButton from "./LoaderButton";
 import RegularTransactionButton from "./RegularTransactionButton";
-import SafeGuard from "./SafeGuard";
 import SafeTransactionButton from "./SafeTransactionButton";
 import { ButtonProps } from "./ui/button";
 
@@ -13,6 +13,7 @@ export interface TransactionButtonProps extends Omit<ButtonProps, "onError"> {
   transaction: TransactionBase | null | undefined;
   onError?(error: Error): void;
   onSuccess?(ethereumTransactionHash: string | void): void;
+  onTransactionStart?(): void;
 }
 
 export function TransactionButton({
@@ -20,40 +21,51 @@ export function TransactionButton({
   transaction,
   onError,
   onSuccess,
+  onTransactionStart,
   ...rest
 }: TransactionButtonProps) {
-  return (
-    <SafeGuard
-      notConnectedFallback={() => <FallbackConnectWalletButton {...rest} />}
-      notDeployedFallback={() => (
-        <RegularTransactionButton
-          {...rest}
-          transaction={transaction}
-          onError={onError}
-          onSuccess={onSuccess}
-        >
-          {children}
-        </RegularTransactionButton>
-      )}
-      notInitializedFallback={() => (
-        <LoaderButton
-          {...rest}
-          loading
-          className={cn(rest.className, "min-w-[120px]")}
-        >
-          {children}
-        </LoaderButton>
-      )}
-    >
-      <SafeTransactionButton
+  const { connected, deployed, initialized } = useSafeContext();
+
+  if (!initialized) {
+    return (
+      <LoaderButton
+        {...rest}
+        loading
+        className={cn(rest.className, "min-w-[120px]")}
+      >
+        {children}
+      </LoaderButton>
+    );
+  }
+
+  if (!connected) {
+    return <FallbackConnectWalletButton {...rest} />;
+  }
+
+  if (!deployed) {
+    return (
+      <RegularTransactionButton
         {...rest}
         transaction={transaction}
         onError={onError}
         onSuccess={onSuccess}
+        onTransactionStart={onTransactionStart}
       >
         {children}
-      </SafeTransactionButton>
-    </SafeGuard>
+      </RegularTransactionButton>
+    );
+  }
+
+  return (
+    <SafeTransactionButton
+      {...rest}
+      transaction={transaction}
+      onError={onError}
+      onSuccess={onSuccess}
+      onTransactionStart={onTransactionStart}
+    >
+      {children}
+    </SafeTransactionButton>
   );
 }
 

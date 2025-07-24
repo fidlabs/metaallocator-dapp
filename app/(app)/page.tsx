@@ -54,6 +54,20 @@ export default function HomePage() {
             </Button>
           </CardFooter>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>OnRamp</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Manage OnRamp clients allowance, rate limits, SPs and more.</p>
+          </CardContent>
+          <CardFooter className="justify-center">
+            <Button asChild>
+              <Link href="/on-ramp">Manage OnRamp contracts</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ type BaseProps = Omit<HTMLAttributes<HTMLDivElement>, "children">;
 export interface BinaryBytesFieldProps<UnitT extends UnitsList | void = void>
   extends BaseProps {
   allowedUnits?: UnitT;
+  disabled?: boolean;
   initialUnit?: UnitT extends void
     ? Unit | void
     : ResolvedUnitsList<UnitT>[number];
@@ -51,6 +52,7 @@ const unitMagnitudeMap = units.reduce((result, unit, index) => {
 export function BinaryBytesField<UnitT extends UnitsList | void = void>({
   allowedUnits,
   className,
+  disabled = false,
   initialUnit,
   placeholder,
   value: controlledValue,
@@ -147,10 +149,15 @@ export function BinaryBytesField<UnitT extends UnitsList | void = void>({
         placeholder={placeholder}
         value={inputValue}
         onChange={handleInputChange}
+        disabled={disabled}
       />
       <Popover open={unitPopoverOpen} onOpenChange={setUnitPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button className="min-w-24 px-3 justify-between" variant="outline">
+          <Button
+            className="min-w-24 px-3 justify-between"
+            variant="outline"
+            disabled={disabled}
+          >
             {unit} <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>

@@ -35,7 +35,13 @@ export function SafeProvider({
     setPublicSafeClient(undefined);
     setSignerSafeClient(undefined);
 
-    if (!safeAddress || !publicClient) {
+    if (!safeAddress) {
+      setInitialized(true);
+      setDeployed(false);
+      return;
+    }
+
+    if (!publicClient) {
       return;
     }
 

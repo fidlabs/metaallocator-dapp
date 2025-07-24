@@ -65,7 +65,7 @@ export function ClientAllowanceWidget({
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Input
-          placeholder="Enter allocator address"
+          placeholder="Enter client address"
           value={clientAddress}
           onChange={handleClientAddressChange}
         />

@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "@fidlabs/common-react-ui": {
+      "signature": "aacff3ef30f301ab8f9ff65da77d5a0f",
+      "link": true,
+      "replaced": "^1.10.1"
+    }
+  }
+}

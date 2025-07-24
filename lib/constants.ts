@@ -9,6 +9,7 @@ export enum QueryKey {
   FILECOIN_ADDRESS = "filecoin_address",
   SAFE_OWNERS = "safe_owners",
   SAFE_PENDING_TRANSACTIONS = "safe_pending_transactions",
+  ACCOUNT_ON_RAMP_ACCESS = "account_on_ramp_access",
 }
 
 export enum MutatationKey {
