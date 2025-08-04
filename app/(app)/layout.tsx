@@ -10,7 +10,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <header className="container mx-auto py-3 flex justify-between items-center gap-6 mb-12">
         <h1 className="text-xl font-semibold">
           <Link className="hover:underline" href="/">
-            Metaallocator dApp
+            Contract Admin
           </Link>
           <sup className="text-sm font-normal text-muted-foreground">BETA</sup>
         </h1>

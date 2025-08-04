@@ -121,8 +121,8 @@ export function CreateClientWidget({
           </div>
           <p className="text-center">
             A new Client contract was successfuly deployed at{" "}
-            <pre className="font-mono">{createdContractAddress}</pre>
           </p>
+          <pre className="font-mono text-center">{createdContractAddress}</pre>
           <Button onClick={clear}>Create another</Button>
         </CardContent>
       )}

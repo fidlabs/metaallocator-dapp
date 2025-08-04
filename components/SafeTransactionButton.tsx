@@ -17,6 +17,7 @@ export interface SafeTransactionButtonProps
   transaction: TransactionBase | null | undefined;
   onError?(error: Error): void;
   onSuccess?(ethereumTransactionHash: string | void): void;
+  onTransactionStart?(): void;
 }
 
 export function SafeTransactionButton({
@@ -27,6 +28,7 @@ export function SafeTransactionButton({
   onClick,
   onError,
   onSuccess,
+  onTransactionStart,
   ...rest
 }: SafeTransactionButtonProps) {
   const { address: accountAddress } = useAccount();
@@ -50,9 +52,11 @@ export function SafeTransactionButton({
         sendTransaction({
           transactions: [transaction],
         });
+
+        onTransactionStart?.();
       }
     },
-    [onClick, sendTransaction, transaction]
+    [onClick, onTransactionStart, sendTransaction, transaction]
   );
 
   const buttonEl = (

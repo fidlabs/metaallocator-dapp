@@ -10,6 +10,7 @@ export interface RegularTransactionButtonProps
   onError?(error: Error): void;
   onSuccess?(ethereumTransactionHash: string): void;
   onTransactionHash?(transactionHash: Hex): void;
+  onTransactionStart?(): void;
 }
 
 type ClickHandler = NonNullable<LoaderButtonProps["onClick"]>;
@@ -23,13 +24,15 @@ export function RegularTransactionButton({
   onError,
   onSuccess,
   onTransactionHash,
+  onTransactionStart,
   ...rest
 }: RegularTransactionButtonProps) {
   const [transactionHash, setTransactionHash] = useState<Hex>();
 
   const handleSendTransaction = useCallback(() => {
     setTransactionHash(undefined);
-  }, []);
+    onTransactionStart?.();
+  }, [onTransactionStart]);
 
   const handleSendTransactionSuccess = useCallback(
     (nextTransactionHash: Hex) => {
@@ -39,7 +42,7 @@ export function RegularTransactionButton({
     [onTransactionHash]
   );
 
-  const { sendTransaction, status: sendStatus } = useSendTransaction({
+  const { sendTransaction, isPending } = useSendTransaction({
     mutation: {
       onMutate: handleSendTransaction,
       onSuccess: handleSendTransactionSuccess,
@@ -55,7 +58,7 @@ export function RegularTransactionButton({
   });
 
   const shouldShowLoader =
-    sendStatus === "pending" || (!!transactionHash && waitStatus === "pending");
+    isPending || (!!transactionHash && waitStatus === "pending");
 
   useEffect(() => {
     if (error) {
