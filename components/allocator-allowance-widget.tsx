@@ -11,7 +11,7 @@ import {
 } from "@fidlabs/common-react-ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TransactionBase } from "@safe-global/types-kit";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type Address, encodeFunctionData, Hex, isAddress } from "viem";
@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 export interface AllocatorAllowanceWidgetProps {
   allocatorContractAddress: Address;
@@ -61,6 +62,7 @@ const formSchema = z.object({
 export function AllocatorAllowanceWidget({
   allocatorContractAddress,
 }: AllocatorAllowanceWidgetProps) {
+  const [mode, setMode] = useState("increase");
   const { data: datacapBreakdown, isLoading: datacapBreakdownLoading } =
     useMetallocatorDatacapBreakdown(allocatorContractAddress);
 
@@ -120,7 +122,8 @@ export function AllocatorAllowanceWidget({
         to: allocatorContractAddress,
         data: encodeFunctionData({
           abi: allocatorABI,
-          functionName: "addAllowance",
+          functionName:
+            mode === "increase" ? "addAllowance" : "decreaseAllowance",
           args: [maybeEthereumAddress, BigInt(values.allowance)],
         }),
         value: "0",
@@ -128,7 +131,7 @@ export function AllocatorAllowanceWidget({
 
       sendTransaction(transaction);
     },
-    [allocatorContractAddress, client, sendTransaction]
+    [allocatorContractAddress, client, mode, sendTransaction]
   );
 
   return (
@@ -139,6 +142,17 @@ export function AllocatorAllowanceWidget({
             <CardTitle>Manage Allocator Allowance</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
+            <Tabs value={mode} onValueChange={setMode}>
+              <TabsList className="w-full">
+                <TabsTrigger className="flex-1" value="increase">
+                  Increase
+                </TabsTrigger>
+                <TabsTrigger className="flex-1" value="decrease">
+                  Decrease
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
             <FormField
               control={form.control}
               name="allocatorAddress"
@@ -158,7 +172,7 @@ export function AllocatorAllowanceWidget({
                   <BinaryBytesField
                     {...restOfFieldProps}
                     className="flex"
-                    placeholder="Enter allowance amount to be added"
+                    placeholder={`Enter allowance amount to be ${mode === "increase" ? "added" : "removed"}`}
                     allowedUnits={["GiB", "TiB", "PiB"]}
                     initialUnit="GiB"
                     onValueChange={(bi) => onChange(bi ? bi.toString() : "")}
@@ -175,6 +189,7 @@ export function AllocatorAllowanceWidget({
                 const allowanceToBeAdded =
                   field.value !== "" ? BigInt(field.value) : 0n;
                 const showWarning =
+                  mode === "increase" &&
                   allowanceToBeAdded > 0 &&
                   !!datacapBreakdown &&
                   datacapBreakdown.unallocatedDatacap - allowanceToBeAdded < 0n;
@@ -198,7 +213,7 @@ export function AllocatorAllowanceWidget({
               }
               type="submit"
             >
-              Add Allowance
+              {mode === "increase" ? "Add" : "Remove"} Allowance
             </SafeOwnerButton>
           </CardFooter>
         </Card>
