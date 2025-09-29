@@ -9,7 +9,7 @@ import {
 } from "@testing-library/react";
 import { type Address } from "viem";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import FactoryContractsWidget from "./FactoryContractsWidget";
+import FactoryContractsWidget from "./factory-contracts-widget";
 
 const testChainId: number = 1;
 const testFactoryAddress: Address = "0x0";

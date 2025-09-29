@@ -111,3 +111,18 @@ export async function getEthAddressForChain(
 
   return evmAddress;
 }
+
+export function partition<T>(
+  input: readonly T[],
+  matchFn: (item: T) => boolean
+): [T[], T[]] {
+  return input.reduce<[T[], T[]]>(
+    ([matching, notMatching], item) => {
+      const matches = matchFn(item);
+      const nextMatching = matches ? [...matching, item] : matching;
+      const nextNotMatching = matches ? notMatching : [...notMatching, item];
+      return [nextMatching, nextNotMatching];
+    },
+    [[], []]
+  );
+}
