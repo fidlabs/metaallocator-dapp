@@ -1,18 +1,29 @@
 import { TESTNET_ENABLED } from "@/lib/constants";
-import { type Address, isAddress } from "viem";
+import { type Address, isAddress, zeroAddress } from "viem";
 import { filecoin, filecoinCalibration } from "viem/chains";
+import { filecoinDevnet } from "./chains";
 
 interface ContractsConfig {
   factoryAddress: Address;
   beaconProxyFactoryAddress: Address;
 }
 
-type ChainId = typeof filecoin.id | typeof filecoinCalibration.id;
+type ChainId =
+  | typeof filecoin.id
+  | typeof filecoinCalibration.id
+  | typeof filecoinDevnet.id;
 type ContractsConfigMap = Map<ChainId, ContractsConfig | null>;
 
 export const contractsConfigMap: ContractsConfigMap = new Map([
   [filecoin.id, loadContractsConfig()],
   [filecoinCalibration.id, TESTNET_ENABLED ? loadContractsConfig(true) : null],
+  [
+    filecoinDevnet.id,
+    {
+      factoryAddress: zeroAddress,
+      beaconProxyFactoryAddress: zeroAddress,
+    },
+  ],
 ]);
 
 export default contractsConfigMap;

@@ -1,3 +1,5 @@
+"use client";
+
 import ScreenBreadcrumbs from "@/components/ScreenBreadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,9 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { filecoinDevnet } from "@/config/chains";
 import Link from "next/link";
+import { useChainId } from "wagmi";
 
 export default function HomePage() {
+  const chainId = useChainId();
+
   return (
     <div className="container mx-auto flex flex-col gap-6 pb-8">
       <ScreenBreadcrumbs
@@ -21,39 +27,43 @@ export default function HomePage() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Allocators</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              List and create new allocator contracts. Manage individual
-              allocators allowance. Manage contracts ownership and more.
-            </p>
-          </CardContent>
-          <CardFooter className="justify-center">
-            <Button asChild>
-              <Link href="/allocator">Manage Allocators</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+        {chainId !== filecoinDevnet.id && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Allocators</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>
+                List and create new allocator contracts. Manage individual
+                allocators allowance. Manage contracts ownership and more.
+              </p>
+            </CardContent>
+            <CardFooter className="justify-center">
+              <Button asChild>
+                <Link href="/allocator">Manage Allocators</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Clients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              Create new Client contracts. Manage individual clients allowance.
-              Manage contracts ownership and more.
-            </p>
-          </CardContent>
-          <CardFooter className="justify-center">
-            <Button asChild>
-              <Link href="/beacon-proxy-factory">Manage Clients</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+        {chainId !== filecoinDevnet.id && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Clients</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>
+                Create new Client contracts. Manage individual clients
+                allowance. Manage contracts ownership and more.
+              </p>
+            </CardContent>
+            <CardFooter className="justify-center">
+              <Button asChild>
+                <Link href="/beacon-proxy-factory">Manage Clients</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
@@ -68,6 +78,22 @@ export default function HomePage() {
             </Button>
           </CardFooter>
         </Card>
+
+        {chainId === filecoinDevnet.id && (
+          <Card>
+            <CardHeader>
+              <CardTitle>SLA</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Deploy new Beneficiary contracts and manage SLA registry.</p>
+            </CardContent>
+            <CardFooter className="justify-center">
+              <Button asChild>
+                <Link href="/sla">Manage SLA</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
       </div>
     </div>
   );
