@@ -8,6 +8,7 @@ import { extractChain, type HttpTransportConfig } from "viem";
 import { createConfig, http } from "wagmi";
 import { Chain, filecoin, filecoinCalibration } from "wagmi/chains";
 import contractsConfigMap from "./contracts";
+import { filecoinDevnet } from "./chains";
 
 interface AppInfo {
   appName: string;
@@ -37,7 +38,7 @@ const chains = Array.from(contractsConfigMap.keys())
   .filter((chainId) => contractsConfigMap.get(chainId) != null)
   .map((chainId) => {
     return extractChain({
-      chains: [filecoin, filecoinCalibration],
+      chains: [filecoin, filecoinCalibration, filecoinDevnet],
       id: chainId,
     });
   });
@@ -53,6 +54,7 @@ export const wagmiConfig = isNotEmptyChainsList(chains)
       transports: {
         [filecoin.id]: http(undefined, commonTransportConfig),
         [filecoinCalibration.id]: http(undefined, commonTransportConfig),
+        [filecoinDevnet.id]: http(undefined, commonTransportConfig),
       },
       ssr: true,
     })
