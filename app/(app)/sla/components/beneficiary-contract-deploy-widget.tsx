@@ -101,8 +101,9 @@ export function BeneficiaryContractDeployWidget({
     abi: beneficiaryFactoryAbi,
     address: factoryAddress,
     eventName: "ProxyCreated",
+    poll: true,
+    pollingInterval: 2_000,
     onLogs(logs) {
-      console.log(logs, transactionHash);
       const createdContactLog = logs.find((log) => {
         return log.transactionHash === transactionHash && !!log.args.proxy;
       });
