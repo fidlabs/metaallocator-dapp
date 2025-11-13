@@ -61,20 +61,20 @@ export function BeneficiaryContractDeployWidget({
     resolver: zodResolver(formSchema),
   });
 
-  const {
-    reset: resetForm,
-    formState: { isValid: isFormValid },
-  } = form;
+  const { reset: resetForm } = form;
 
-  const [admin, provider, withdrawer] = useWatch({
+  const values = useWatch({
     control: form.control,
-    name: ["admin", "provider", "withdrawer"],
   });
 
   const transaction = useMemo<TransactionBase | null>(() => {
-    if (!isFormValid) {
+    const validationResult = formSchema.safeParse(values);
+
+    if (!validationResult.success) {
       return null;
     }
+
+    const { admin, provider, withdrawer } = validationResult.data;
 
     const providerIdInteger = BigInt(
       provider.replaceAll(storageProviderIdPrefixRegex, "")
@@ -89,7 +89,7 @@ export function BeneficiaryContractDeployWidget({
       }),
       value: "0",
     };
-  }, [admin, factoryAddress, isFormValid, provider, withdrawer]);
+  }, [factoryAddress, values]);
 
   const clear = useCallback(() => {
     resetForm();
