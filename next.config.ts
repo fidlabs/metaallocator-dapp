@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   output: "standalone",
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: "/devnet-rpc",
+        destination: "http://fidlabs.servehttp.com:1234/rpc/v1",
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {

@@ -10,7 +10,7 @@ export const filecoinDevnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["http://fidlabs.servehttp.com:1234/rpc/v1"],
+      http: ["/devnet-rpc", "http://fidlabs.servehttp.com:1234/rpc/v1"],
     },
   },
 });
